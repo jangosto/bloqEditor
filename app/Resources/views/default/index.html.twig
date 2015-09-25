@@ -1,0 +1,3 @@
+{% for site in user.sites %}
+    <a href="{{ path('site_editor_homepage', {'site': site.slug}) }}">{{ site.name }}</a>
+{% endfor %}

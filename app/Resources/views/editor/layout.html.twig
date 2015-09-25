@@ -1,0 +1,103 @@
+{% extends "base.html.twig" %}
+
+{% block metas %}
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="title" content="">
+    <meta name="description" content="">
+    <meta content="width=device-width" name="viewport">
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ statics_domain }}/css/estilos.css">
+{% endblock %}
+
+{% block javascript %}
+    <!--[if lt IE 9]>
+        <script src="js/html5.js"></script>
+    <![endif]-->
+    <script src="{{ statics_domain }}/js/jquery-1.11.1.min.js"></script>
+{% endblock %}
+
+{% block bodyAttributes %}name="{% block bodyName %}top{% endblock %}" class="{% block bodyClass %}bg-gris-50{% endblock %}" id="{% block bodyId %}sitios{% endblock %}"{% endblock %}
+
+{% block header %}
+    <header class="bg-gris-100 clear">
+        <span class="titulo tam24 rojo-500"><strong>fanatic</strong>.futbol{% block breadcrumb %}{% endblock %}</span>
+        <img src="{{ statics_domain }}/img/angel-grande.jpg" alt="Ángel Ruiz Jiménez" class="avatar">
+        <menu class="botones der">
+            <span class="desplegable">
+                <a href="javascript:void(0)" class="boton cuadrado negro desplegador" title="Alertas"><span class="icon icon-alertas icono"><span class="globo"></span></span></a>
+                <span class="persiana der bg-blanco alertas">
+                    <ul>
+                        <li>
+                            <p class="texto"><span class="gris-500"><strong>Nuevo comentario</strong> en el articulo "Así es el apartamento de Cristiano Ronaldo en Manhattan"</span></p>
+                            <span class="botones der">
+                                <a href="comentario.html" class="boton negro"><span class="accion">Revisar</span></a>
+                                <a href="javascript:void(0)" class="boton cuadrado negro borrar-alerta"><span class="icono icon icon-eliminar"></span></a>
+                            </span>
+                        </li>
+                        <li>
+                            <p class="texto"><span class="gris-500"><strong>Nuevo comentario</strong> en el articulo "Las joyas de la mujer de Messi"</span></p>
+                            <span class="botones der">
+                                <a href="comentario.html" class="boton negro"><span class="accion">Revisar</span></a>
+                                <a href="javascript:void(0)" class="boton cuadrado negro borrar-alerta"><span class="icono icon icon-eliminar"></span></a>
+                            </span>
+                        </li>
+                    </ul>
+                </span>
+            </span>
+            <a href="ajustes-cuenta.html" class="boton cuadrado negro" title="Ajustes de mi cuenta"><span class="icon icon-ajustes icono"></span></a>
+            <a href="cerrar-sesion.html" class="boton cuadrado negro" title="Cerrar sesión"><span class="icon icon-cerrar icono"></span></a>
+        </menu>
+    </header>
+{% endblock %}
+
+{% block nav %}
+    <nav class="navegacion bg-gris-900">
+        <h1>
+            <span class="boton cuadrado azul" id="boton_menu"><span class="icono icon icon-menu"></span></span>
+            <span class="boton cuadrado azul" id="boton_cerrar_menu"><span class="icono icon icon-flecha-izq"></span></span>
+            <em>Bloq, gestor de contenidos a medida</em>
+        </h1>
+        <a href="{{ url('editor_homepage') }}" class="boton cuadrado blanco sitios" title="Sítios"><span class="icono icon icon-sitios"></span><span class="accion">Sítios</span></a>
+    {% if currentSite is defined and currentSite | length > 0 %}    
+        <a href="panel-control.html" class="boton cuadrado blanco panel" title="Panel de control"><span class="icono icon icon-dashboard"></span><span class="accion">Panel de control</span></a>
+        <a href="articulos.html" class="boton cuadrado blanco articulos" title="Artículos"><span class="icono icon icon-articulos"></span><span class="accion">Artículos</span></a>
+        <a href="galerias.html" class="boton cuadrado blanco galerias" title="Galerías"><span class="icono icon icon-galerias"></span><span class="accion">Galerías</span></a>
+        <a href="perfiles.html" class="boton cuadrado blanco perfiles" title="Perfiles"><span class="icono icon icon-perfiles"></span><span class="accion">Perfiles</span></a>
+        <a href="comentarios.html" class="boton cuadrado blanco comentarios" title="Comentarios"><span class="icono icon icon-comentarios"></span><span class="accion">Comentarios</span></a>
+        <a href="multimedia.html" class="boton cuadrado blanco multimedia" title="Multimedia"><span class="icono icon icon-multimedia"></span><span class="accion">Multimedia</span></a>
+        <a href="ajustes-publicacion.html" class="boton cuadrado blanco ajustes" title="Ajustes de publicación"><span class="icon icon-configuracion icono"></span><span class="accion">Ajustes de publicación</span></a>
+    {% endif %}
+        <a href="ayuda.html" class="boton cuadrado blanco ayuda" title="Ayuda"><span class="icono icon icon-ayuda"></span><span class="accion">Ayuda</span></a>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="contenedor clear">
+        {% block siteActionHeader %}
+        <span class="col-12 pad">
+            <h1 class="titulo cuerpo tam38 rojo-500">{% block siteActionTitle %}{% endblock %}</h1>
+            <p class="texto">{% block siteActionDescription %}{% endblock %}</p>
+        </span>
+        {% endblock %}
+        <span class="col-12 clear">
+        {% block siteActionContent %}
+        {% endblock %}
+        </span>
+    </main>
+{% endblock %}
+
+{% block footer %}
+    <footer class="pie">
+        <p class="texto gris-500">&copy; <strong>fanatic.futbol</strong> Todos los derechos reservados</p>
+    </footer>
+{% endblock %}
+
+{% block bodyJs %}
+    <script src="{{ statics_domain }}/js/cocktail.js"></script>
+    <script src="{{ statics_domain }}/js/scripts.js"></script>
+{% endblock %}
+
+

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ES">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="title" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:100,400,900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="http://dev.static.fanatic.futbol/css/estilos.css">
+    <!--[if lt IE 9]>
+      <script src="http://dev.static.fanatic.futbol/js/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body name="top" class="completo bg-gris-50">
+    <main role="main" class="contenedor clear">
+      <span class="col-3"></span>
+      <span class="col-6 centrado-vertical">
+        <h1 class="titulo cuerpo tam30 rojo-500"><strong>fanatic</strong>.futbol <small class="gris-500">Acceso para editores</small></h1>
+
+        <form action="{{ path("fos_user_security_check") }}" method="post" class="clear">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+          <input type="text" id="username" required="required" class="texto" name="_username" value="{{ last_username }}" placeholder="Nombre de Usuario">
+          <input type="password" id="password" name="_password" required="required" class="texto" placeholder="Contraseña">
+          <label for="remember_me" class="check"><input id="remember_me" name="_remember_me" value="on" type="checkbox">Recordar contraseña en este equipo</label>
+          <span class="botones der">
+            <input type="submit" id="_submit" name="_submit" class="boton azul" value="Entrar">
+          </span>
+        </form>
+{#        <form action="" class="clear">
+          <input type="email" class="texto" placeholder="Correo electrónico">
+          <input type="password" class="texto" placeholder="Contraseña">
+          <label class="check"><input type="checkbox">Recordar contraseña en este equipo</label>
+          <span class="botones der">
+            <input type="button" class="boton azul" value="Entrar">
+          </span>
+        </form>#}
+
+        <p class="texto">¿Has olvidado la contraseña? <a href="back-recuperar-contrasena.html" class="alter">Haz click aquí para recuperarla</a></p>
+      </span>
+    </main>
+    <script src="http://dev.static.fanatic.futbol/js/jquery-1.11.1.min.js"></script>
+    <script src="http://dev.static.fanatic.futbol/js/cocktail.js"></script>
+    <script src="http://dev.static.fanatic.futbol/js/scripts.js"></script>
+  </body>
+</html>
