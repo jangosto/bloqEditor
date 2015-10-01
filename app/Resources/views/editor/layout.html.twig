@@ -62,7 +62,7 @@
         </h1>
         <a href="{{ url('editor_homepage') }}" class="boton cuadrado blanco sitios" title="Sítios"><span class="icono icon icon-sitios"></span><span class="accion">Sítios</span></a>
     {% if currentSite is defined and currentSite | length > 0 %}    
-        <a href="panel-control.html" class="boton cuadrado blanco panel" title="Panel de control"><span class="icono icon icon-dashboard"></span><span class="accion">Panel de control</span></a>
+        <a href="{{ url('site_editor_dashboard', {'site': currentSite.slug}) }}" class="boton cuadrado blanco panel" title="Panel de control"><span class="icono icon icon-dashboard"></span><span class="accion">Panel de control</span></a>
         <a href="articulos.html" class="boton cuadrado blanco articulos" title="Artículos"><span class="icono icon icon-articulos"></span><span class="accion">Artículos</span></a>
         <a href="galerias.html" class="boton cuadrado blanco galerias" title="Galerías"><span class="icono icon icon-galerias"></span><span class="accion">Galerías</span></a>
         <a href="perfiles.html" class="boton cuadrado blanco perfiles" title="Perfiles"><span class="icono icon icon-perfiles"></span><span class="accion">Perfiles</span></a>

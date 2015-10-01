@@ -18,16 +18,16 @@ use AppBundle\Entity\User as AdminUser;
 class EditorController extends Controller
 {
     /**
-     * @Route("/", name="site_editor_homepage")
+     * @Route("/", name="site_editor_dashboard")
      */
-    public function indexAction(Request $request, $site)
+    public function dashboardAction(Request $request, $site)
     {
         $siteManager = $this->container->get('app.manager.site');
         $site = $siteManager->getBySlug($site);
 
         return $this->render('editor/site_dashboard.html.twig', array(
             'user' => $this->getUser(),
-            'currentSite' => $site,
+            'currentSite' => $site[0],
         ));
     }
 

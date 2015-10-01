@@ -65,6 +65,14 @@ doctrine:
                 user:     "%users.database_user%"
                 password: "%users.database_password%"
                 charset:  UTF8
+            creator:
+                driver:   pdo_mysql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%creator.database_name%"
+                user:     "%creator.database_user%"
+                password: "%creator.database_password%"
+                charset:  UTF8
             content:
                 driver:   pdo_mysql
                 host:     "%database_host%"
@@ -72,7 +80,7 @@ doctrine:
                 dbname:   'empty_database'
                 charset:  UTF8
                 wrapper_class: 'Bloq\Doctrine\MulticonnectBundle\Connection\ConnectionWrapper'
-                
+
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
         #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
@@ -88,12 +96,20 @@ doctrine:
                 mappings:
                     FOSUserBundle: ~
                     AppBundle:  ~
+            creator:
+                connection:     creator
+                mappings:
+                    BloqEditorBundle: ~
+                    AppBundle:  ~
+                naming_strategy: doctrine.orm.naming_strategy.underscore
             content:
                 connection:     content
                 mappings:
                     AppBundle:  ~
-                    
+
         auto_generate_proxy_classes: "%kernel.debug%"
+        resolve_target_entities:
+            Bloq\Common\EditorBundle\Entity\EditorialContentInterface: Bloq\Common\EditorBundle\Entity\EditorialContent
         #naming_strategy: doctrine.orm.naming_strategy.underscore
         #auto_mapping: true
 

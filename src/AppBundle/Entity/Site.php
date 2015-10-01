@@ -13,4 +13,3 @@ use Bloq\Common\EntitiesBundle\Entity\Site as BloqSite;
 class Site extends BloqSite
 {
 }
-
