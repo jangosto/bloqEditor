@@ -95,7 +95,7 @@ doctrine:
                 connection:     users
                 mappings:
                     FOSUserBundle: ~
-                    AppBundle:  ~
+                    BloqEntitiesBundle:  ~
             creator:
                 connection:     creator
                 mappings:
@@ -105,11 +105,11 @@ doctrine:
             content:
                 connection:     content
                 mappings:
+                    BloqEditorBundle: ~
                     AppBundle:  ~
+                naming_strategy: doctrine.orm.naming_strategy.underscore
 
         auto_generate_proxy_classes: "%kernel.debug%"
-        resolve_target_entities:
-            Bloq\Common\EditorBundle\Entity\EditorialContentInterface: Bloq\Common\EditorBundle\Entity\EditorialContent
         #naming_strategy: doctrine.orm.naming_strategy.underscore
         #auto_mapping: true
 
@@ -124,7 +124,7 @@ swiftmailer:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
-    user_class: AppBundle\Entity\User
+    user_class: Bloq\Common\EntitiesBundle\Entity\User
     model_manager_name: users
     service:
         mailer: fos_user.mailer.twig_swift

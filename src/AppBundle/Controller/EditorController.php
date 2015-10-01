@@ -32,6 +32,20 @@ class EditorController extends Controller
     }
 
     /**
+     * @Route("/articles/", name="site_editor_articles_list")
+     */
+    public function dashboardAction(Request $request, $site)
+    {
+        $siteManager = $this->container->get('app.manager.site');
+        $site = $siteManager->getBySlug($site);
+
+        return $this->render('editor/site_dashboard.html.twig', array(
+            'user' => $this->getUser(),
+            'currentSite' => $site[0],
+        ));
+    }
+
+    /**
      * @Route("/users/list/", name="admin_users_list")
      */
     public function listUsersAction()

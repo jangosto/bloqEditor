@@ -1,9 +1,9 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
 parameters:
-    app.entity.user.class: 'AppBundle\Entity\User'
-    app.entity.site.class: 'AppBundle\Entity\Site'
-    app.manager.site.class: 'AppBundle\Manager\SiteManager'
+    app.entity.user.class: 'Bloq\Common\EntitiesBundle\Entity\User'
+    app.entity.site.class: 'Bloq\Common\EntitiesBundle\Entity\Site'
+    app.manager.site.class: 'Bloq\Common\EntitiesBundle\Manager\SiteManager'
     app.user.creation.form.type: app_user_creation
     app.user.creation.form.handler: app.user_creation.form.handler.default
     app.user.creation.form.name: app_user_creation_form
