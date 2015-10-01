@@ -8,8 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+use Bloq\Common\EntitiesBundle\Entity\User as AdminUser;
+
 use AppBundle\Form\Type\UserCreationFormType as AdminUserCreationFormType;
-use AppBundle\Entity\User as AdminUser;
 
 
 /**
@@ -18,16 +19,30 @@ use AppBundle\Entity\User as AdminUser;
 class EditorController extends Controller
 {
     /**
-     * @Route("/", name="site_editor_homepage")
+     * @Route("/", name="site_editor_dashboard")
      */
-    public function indexAction(Request $request, $site)
+    public function siteDashboardAction(Request $request, $site)
     {
         $siteManager = $this->container->get('app.manager.site');
         $site = $siteManager->getBySlug($site);
 
         return $this->render('editor/site_dashboard.html.twig', array(
             'user' => $this->getUser(),
-            'currentSite' => $site,
+            'currentSite' => $site[0],
+        ));
+    }
+
+    /**
+     * @Route("/articles/", name="site_editor_articles_list")
+     */
+    public function siteArticlesListAction(Request $request, $site)
+    {
+        $siteManager = $this->container->get('app.manager.site');
+        $site = $siteManager->getBySlug($site);
+
+        return $this->render('editor/site_dashboard.html.twig', array(
+            'user' => $this->getUser(),
+            'currentSite' => $site[0],
         ));
     }
 

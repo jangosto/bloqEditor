@@ -65,6 +65,14 @@ doctrine:
                 user:     "%users.database_user%"
                 password: "%users.database_password%"
                 charset:  UTF8
+            creator:
+                driver:   pdo_mysql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%creator.database_name%"
+                user:     "%creator.database_user%"
+                password: "%creator.database_password%"
+                charset:  UTF8
             content:
                 driver:   pdo_mysql
                 host:     "%database_host%"
@@ -72,7 +80,7 @@ doctrine:
                 dbname:   'empty_database'
                 charset:  UTF8
                 wrapper_class: 'Bloq\Doctrine\MulticonnectBundle\Connection\ConnectionWrapper'
-                
+
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
         #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
@@ -87,12 +95,20 @@ doctrine:
                 connection:     users
                 mappings:
                     FOSUserBundle: ~
+                    BloqEntitiesBundle:  ~
+            creator:
+                connection:     creator
+                mappings:
+                    BloqEditorBundle: ~
                     AppBundle:  ~
+                naming_strategy: doctrine.orm.naming_strategy.underscore
             content:
                 connection:     content
                 mappings:
+                    BloqEditorBundle: ~
                     AppBundle:  ~
-                    
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+
         auto_generate_proxy_classes: "%kernel.debug%"
         #naming_strategy: doctrine.orm.naming_strategy.underscore
         #auto_mapping: true
@@ -108,7 +124,7 @@ swiftmailer:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
-    user_class: AppBundle\Entity\User
+    user_class: Bloq\Common\EntitiesBundle\Entity\User
     model_manager_name: users
     service:
         mailer: fos_user.mailer.twig_swift

@@ -4,13 +4,13 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Bloq\Common\EntitiesBundle\Entity\Site as BloqSite;
+use Bloq\Common\EditorBundle\Entity\Url as BloqUrl;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="site")
+ * @ORM\Table(name="url")
  */
-class Site extends BloqSite
+class Url extends BloqUrl
 {
 }
 
