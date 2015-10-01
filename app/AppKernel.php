@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new AppBundle\AppBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new Bloq\Common\EntitiesBundle\BloqEntitiesBundle(),
             new Bloq\Common\EditorBundle\BloqEditorBundle(),
         );
 
