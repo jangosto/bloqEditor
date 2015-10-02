@@ -73,11 +73,12 @@ doctrine:
                 user:     "%creator.database_user%"
                 password: "%creator.database_password%"
                 charset:  UTF8
-            content:
+            dynamic:
                 driver:   pdo_mysql
                 host:     "%database_host%"
                 port:     "%database_port%"
                 dbname:   'empty_database'
+                password:  'empty_password'
                 charset:  UTF8
                 wrapper_class: 'Bloq\Doctrine\MulticonnectBundle\Connection\ConnectionWrapper'
 
@@ -103,7 +104,7 @@ doctrine:
                     AppBundle:  ~
                 naming_strategy: doctrine.orm.naming_strategy.underscore
             content:
-                connection:     content
+                connection:     dynamic
                 mappings:
                     BloqEditorBundle: ~
                     AppBundle:  ~

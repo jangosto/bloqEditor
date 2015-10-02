@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new Bloq\Common\EntitiesBundle\BloqEntitiesBundle(),
             new Bloq\Common\EditorBundle\BloqEditorBundle(),
+            new Bloq\Doctrine\MulticonnectBundle\BloqMulticonnectBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
