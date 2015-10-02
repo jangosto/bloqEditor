@@ -129,15 +129,3 @@ fos_user:
     model_manager_name: users
     service:
         mailer: fos_user.mailer.twig_swift
-    registration:
-        confirmation:
-            template: email/user_creation.email.twig
-#            enabled: true
-            from_email:
-                address: admin.registration@fanatic.futbol
-                sender_name: Fanatic Admin
-        form:
-            type: app_user_creation
-            handler: app.user_creation.form.handler
-            name: app_user_creation_form
-        
