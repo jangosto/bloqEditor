@@ -1,0 +1,54 @@
+{% extends "editor/layout.html.twig" %}
+
+{% block siteActionContent %}
+<div class="row">
+    <div class="col-md-8">
+        <form rol="form" action="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        {{ form_label(form.pretitle, "Antetitulo") }}
+                        {{ form_errors(form.pretitle) }}
+                        {{ form_widget(form.pretitle, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        {{ form_label(form.title, "Titulo") }}
+                        {{ form_errors(form.title) }}
+                        {{ form_widget(form.title, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        {{ form_label(form.subtitle, "Subtitulo") }}
+                        {{ form_errors(form.subtitle) }}
+                        {{ form_widget(form.subtitle, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        {{ form_label(form.text, "Texto") }}
+                        {{ form_errors(form.text) }}
+                        {{ form_widget(form.text, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                        <input type="submit" class= "btn btn-default" value="create">
+                    </div>
+                </div>
+            </div>
+            {{ form_rest(form) }}
+        </form>
+    </div>
+</div>
+{% endblock %}

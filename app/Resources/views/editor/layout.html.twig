@@ -61,11 +61,12 @@
             <em>Bloq, gestor de contenidos a medida</em>
         </h1>
         <a href="{{ url('editor_homepage') }}" class="boton cuadrado blanco sitios" title="Sítios"><span class="icono icon icon-sitios"></span><span class="accion">Sítios</span></a>
-    {% if currentSite is defined and currentSite | length > 0 %}    
+    {% if currentSite is defined and currentSite | length > 0 %}
         <a href="{{ url('site_editor_dashboard', {'site': currentSite.slug}) }}" class="boton cuadrado blanco panel" title="Panel de control"><span class="icono icon icon-dashboard"></span><span class="accion">Panel de control</span></a>
-        <a href="articulos.html" class="boton cuadrado blanco articulos" title="Artículos"><span class="icono icon icon-articulos"></span><span class="accion">Artículos</span></a>
-        <a href="galerias.html" class="boton cuadrado blanco galerias" title="Galerías"><span class="icono icon icon-galerias"></span><span class="accion">Galerías</span></a>
-        <a href="perfiles.html" class="boton cuadrado blanco perfiles" title="Perfiles"><span class="icono icon icon-perfiles"></span><span class="accion">Perfiles</span></a>
+        {% for key, editorialContent in editorial_contents %}
+        <a href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': key}) }}" class="boton cuadrado blanco {{ editorialContent.menu_class }}" title="{{ editorialContent.pretty_name }}"><span class="icono icon icon-{{ editorialContent.menu_class }}"></span><span class="accion">{{ editorialContent.pretty_name }}</span></a>
+        {% endfor %}
+        <!-- === <a href="perfiles.html" class="boton cuadrado blanco perfiles" title="Perfiles"><span class="icono icon icon-perfiles"></span><span class="accion">Perfiles</span></a> === -->
         <a href="comentarios.html" class="boton cuadrado blanco comentarios" title="Comentarios"><span class="icono icon icon-comentarios"></span><span class="accion">Comentarios</span></a>
         <a href="multimedia.html" class="boton cuadrado blanco multimedia" title="Multimedia"><span class="icono icon icon-multimedia"></span><span class="accion">Multimedia</span></a>
         <a href="ajustes-publicacion.html" class="boton cuadrado blanco ajustes" title="Ajustes de publicación"><span class="icon icon-configuracion icono"></span><span class="accion">Ajustes de publicación</span></a>
