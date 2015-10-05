@@ -2,11 +2,19 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: bloq_editor_config.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: en
+    locale: sp
+    editorial_contents: &editorial_contents_config
+        article:
+            pretty_name: Artículo
+            menu_class: articulos
+        gallery:
+            pretty_name: Galería
+            menu_class: galerias
 
 framework:
     #esi:             ~
@@ -38,6 +46,7 @@ twig:
     strict_variables: "%kernel.debug%"
     globals:
         statics_domain: %statics.server.domain%
+        editorial_contents: *editorial_contents_config
 
 # Assetic Configuration
 assetic:
