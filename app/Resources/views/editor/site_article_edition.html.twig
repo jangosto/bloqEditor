@@ -1,54 +1,68 @@
 {% extends "editor/layout.html.twig" %}
 
 {% block siteActionContent %}
-<div class="row">
-    <div class="col-md-8">
-        <form rol="form" action="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="form-group">
-                        {{ form_label(form.pretitle, "Antetitulo") }}
-                        {{ form_errors(form.pretitle) }}
-                        {{ form_widget(form.pretitle, { 'attr': { 'class': 'form-control' } }) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="form-group">
-                        {{ form_label(form.title, "Titulo") }}
-                        {{ form_errors(form.title) }}
-                        {{ form_widget(form.title, { 'attr': { 'class': 'form-control' } }) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="form-group">
-                        {{ form_label(form.subtitle, "Subtitulo") }}
-                        {{ form_errors(form.subtitle) }}
-                        {{ form_widget(form.subtitle, { 'attr': { 'class': 'form-control' } }) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="form-group">
-                        {{ form_label(form.text, "Texto") }}
-                        {{ form_errors(form.text) }}
-                        {{ form_widget(form.text, { 'attr': { 'class': 'form-control' } }) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div>
-                        <input type="submit" class= "btn btn-default" value="create">
-                    </div>
-                </div>
-            </div>
-            {{ form_rest(form) }}
-        </form>
-    </div>
-</div>
+<form class="col-12 clear">
+    <span class="col-6 pad">
+        {{ form_label(form.title, "Título del Artículo") }}
+        {{ form_errors(form.title) }}
+        {{ form_widget(form.title, { 'attr': { 'class': 'texto grande' } }) }}
+
+        {{ form_label(form.pretitle, "Antetítulo") }}
+        {{ form_errors(form.pretitle) }}
+        {{ form_widget(form.pretitle, { 'attr': { 'class': 'texto' } }) }}
+
+        {{ form_label(form.subtitles, "Subtítulos") }}
+        {{ form_errors(form.subtitles) }}
+        <ul id="subtitles-list" data-prototype="{{ form_widget(form.subtitles.vars.prototype)|e }}">
+        {% for subtitle in form.subtitles %}
+            <li>
+                {{ form_errors(subtitle) }}
+                {{ form_widget(subtitle, { 'attr': { 'class': 'texto' } }) }}
+                <button class='boton rojo delete-button'>X</button>
+            </li>
+        {% endfor %}
+        </ul>
+        <button id="add-subtitle-button" class="boton azul">Añadir subtítulos</button>
+        <script>
+            var subtitlesCount = '{{ form.subtitles|length }}';
+
+            jQuery(document).ready(function(){
+                jQuery('#add-subtitle-button').click(function(e){
+                    e.preventDefault();
+
+                    var subtitlesList = jQuery('#subtitles-list');
+
+                    var newWidget = subtitlesList.attr('data-prototype');
+                    newWidget = newWidget.replace(/__name__/g, subtitlesCount);
+                    newWidget = newWidget.replace('class="subtitle-box"', 'class="subtitle-box texto"');
+                    var newSubtitle = newWidget + "<button class='boton rojo delete-button'>X</button>";
+                    subtitlesCount++;
+
+                    var newLi = jQuery('<li></li>').html(newSubtitle);
+                    newLi.appendTo(subtitlesList);
+                });
+
+                jQuery(document).on('click', '.delete-button', function(e){
+                    jQuery(this).parent().remove();
+                });
+            });
+        </script>
+
+        {{ form_label(form.intro, "Entradilla") }}
+        {{ form_errors(form.intro) }}
+        {{ form_widget(form.intro, { 'attr': { 'rows': '3' } }) }}
+
+        <label for="editor">Texto del artículo</label>
+        {{ form_widget(form.text, { 'id': 'editor' }) }}
+    </sapn>
+</form>
+
+{% endblock %}
+
+{% block bodyJs %}
+{{ parent() }}
+<script>
+    var contenido = '<p>Escribe aquí el contenido del artículo</p>'
+</script>
+<script src="{{ statics_domain }}/js/editor.js"></script>
 {% endblock %}

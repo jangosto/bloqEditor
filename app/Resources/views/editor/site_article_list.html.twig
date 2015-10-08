@@ -1,5 +1,7 @@
 {% extends "editor/layout.html.twig" %}
 
 {% block siteActionContent %}
-<a href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': 'new'}) }}">Crear nueva Noticia</a>
+<span class="col-12 clear">
+    <a href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': 'new'}) }}">Crear nueva Noticia</a>
+</span>
 {% endblock %}
