@@ -43,5 +43,5 @@ security:
 #        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/editor, role: ROLE_EDITOR }
-        - { path: ^/, role: ROLE_ADMIN }
+        - { path: ^/, role: ROLE_EDITOR }
 
