@@ -1,7 +1,13 @@
 {% extends "editor/layout.html.twig" %}
 
+{% block siteActionHeader %}
+<span class="col-12 pad">
+    <h1 class="titulo cuerpo tam38 rojo-500">Edición de Artículo</h1>
+</span>
+{% endblock %}
+
 {% block siteActionContent %}
-<form class="col-12 clear">
+<form class="col-12 clear" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
     <span class="col-6 pad">
         {{ form_label(form.title, "Título del Artículo") }}
         {{ form_errors(form.title) }}
@@ -52,17 +58,37 @@
         {{ form_errors(form.intro) }}
         {{ form_widget(form.intro, { 'attr': { 'rows': '3' } }) }}
 
-        <label for="editor">Texto del artículo</label>
-        {{ form_widget(form.text, { 'id': 'editor' }) }}
-    </sapn>
+        {{ form_label(form.text, "Texto del Artículo") }}
+        {{ form_widget(form.text, { 'attr': { 'class': 'tinymce', 'rows': '30' } }) }}
+        {{ tinymce_init() }}
+    </span>
+    <span class="col-3 pad">
+    </span>
+    <span class="col-3 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
+        {{ form_label(form.category, "Categría") }}
+        {{ form_errors(form.category) }}
+        {{ form_widget(form.category) }}
+        <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar categoría como antetítulo</label>
+        {{ form_label(form.tags, "Etiquetas") }}
+        {{ form_errors(form.tags) }}
+        {{ form_widget(form.tags) }}
+
+{#        <legend class="titulo tam24 cuerpo rojo-500">Publicación</legend>
+        <label for="autor">Autor</label>
+        <input type="text" class="texto" id="autor"><!-- este campo debe estar relleno por defecto con el autor que está creando el artículo -->
+        <label for="" class="check"><input type="checkbox" checked="true">Enlazar facebook del autor</label>
+        <label for="" class="check"><input type="checkbox" checked="true">Enlazar twitter del autor</label>
+        <label for="fecha_publicacion">Fecha de publicación</label>
+        <input type="text" class="texto" id="fecha_publicacion" value="06/10/2015 12:58"><!-- este campo debe estar relleno automáticamente con la fecha y hora del momento de publicación -->
+#}
+        <span class="botones">
+            <button type="submit" value="publish" class="boton azul"><span class="accion">Publicar</span></button>
+            <button type="submit" value="save" class="boton negro"><span class="accion">Guardar borrador</span></button>
+        </span>
+    </span>
+    {{ form_widget(form._token) }}
 </form>
 
 {% endblock %}
 
-{% block bodyJs %}
-{{ parent() }}
-<script>
-    var contenido = '<p>Escribe aquí el contenido del artículo</p>'
-</script>
-<script src="{{ statics_domain }}/js/editor.js"></script>
-{% endblock %}

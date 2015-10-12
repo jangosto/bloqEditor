@@ -67,10 +67,10 @@ class EditorController extends Controller
         $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent); 
 
         $form->handleRequest($request);
-
+        
         if ($form->isValid()) {
             $editorialContent = $form->getData();
-
+            
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
