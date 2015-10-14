@@ -17,7 +17,13 @@
         {{ form_errors(form.pretitle) }}
         {{ form_widget(form.pretitle, { 'attr': { 'class': 'texto' } }) }}
 
-        {{ form_label(form.subtitles, "Subtítulos") }}
+        {% for subtitle in form.subtitles %}
+        {{ form_label(subtitle, "Subtítulo "~loop.index) }}
+        {{ form_errors(subtitle) }}
+        {{ form_widget(subtitle, { 'attr': { 'class': 'texto' } }) }}
+        {% endfor %}
+
+        {# {{ form_label(form.subtitles, "Subtítulos") }}
         {{ form_errors(form.subtitles) }}
         <ul id="subtitles-list" data-prototype="{{ form_widget(form.subtitles.vars.prototype)|e }}">
         {% for subtitle in form.subtitles %}
@@ -52,7 +58,7 @@
                     jQuery(this).parent().remove();
                 });
             });
-        </script>
+        </script> #}
 
         {{ form_label(form.intro, "Entradilla") }}
         {{ form_errors(form.intro) }}
@@ -63,6 +69,92 @@
         {{ tinymce_init() }}
     </span>
     <span class="col-3 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
+        {% set multimedia = form.multimedias.0 %}
+        {% if multimedia.url is defined and multimedia.url|length > 0 %}
+        <label>Imagen Principal</label>
+        <span class="caja-imagen">
+            <span class="tarjeta imagen">
+                <img alt="" src="{{ multimedia.url }}">
+                <span class="botones der">
+                    <a class="boton cuadrado blanco descartar" href="javascript:void(0)">
+                        <span class="icono icon icon-eliminar"></span>
+                    </a>
+                </span>
+            </span>
+        </span>
+        {% else %}
+            <label for="imagen_ppal">ID de la imagen</label>
+            <input id="imagen_ppal" class="texto" type="text">
+
+            {{ form_label(multimedia.file, "O sube una imagen") }}
+            {{ form_errors(multimedia.file) }}
+            {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
+        {% endif %}
+
+        <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
+        {% set multimedia = form.multimedias.1 %}
+        {% if multimedia.url is defined and multimedia.url|length > 0 %}
+        <label>Imagen en Texto 1</label>
+        <span class="caja-imagen">
+            <span class="tarjeta imagen">
+                <img alt="" src="{{ multimedia.url }}">
+                <span class="botones der">
+                    <a class="boton cuadrado blanco descartar" href="javascript:void(0)">
+                        <span class="icono icon icon-eliminar"></span>
+                    </a>
+                </span>
+            </span>
+        </span>
+        {% else %}
+            <label for="imagen_ppal">ID de la imagen</label>
+            <input id="imagen_ppal" class="texto" type="text">
+
+            {{ form_label(multimedia.file, "O sube una imagen") }}
+            {{ form_errors(multimedia.file) }}
+            {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
+        {% endif %}
+
+        {% set multimedia = form.multimedias.2 %}
+        {% if multimedia.url is defined and multimedia.url|length > 0 %}
+        <label>Imagen en Texto 2</label>
+        <span class="caja-imagen">
+            <span class="tarjeta imagen">
+                <img alt="" src="{{ multimedia.url }}">
+                <span class="botones der">
+                    <a class="boton cuadrado blanco descartar" href="javascript:void(0)">
+                        <span class="icono icon icon-eliminar"></span>
+                    </a>
+                </span>
+            </span>
+        </span>
+        {% else %}
+            <label for="imagen_ppal">ID de la imagen</label>
+            <input id="imagen_ppal" class="texto" type="text">
+
+            {{ form_label(multimedia.file, "O sube una imagen") }}
+            {{ form_errors(multimedia.file) }}
+            {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
+        {% endif %}
+
+        <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
+        {% for summary in form.summaries %}
+            {{ form_label(summary, "Sumario "~loop.index) }}
+            {{ form_errors(summary) }}
+            {{ form_widget(summary, { 'attr': { 'class': 'texto' } }) }}
+        {% endfor %}
+
+        <legend class="titulo tam24 cuerpo rojo-500">Vídeo</legend>
+        {% set multimedia = form.multimedias.3 %}
+        {{ form_label(multimedia.htmlCode, "Código del reproductor de vídeo") }}
+        {{ form_errors(multimedia.htmlCode) }}
+        {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
+
+        <legend class="titulo tam24 cuerpo rojo-500">Audio</legend>
+        {% set multimedia = form.multimedias.4 %}
+        {{ form_label(multimedia.htmlCode, "Código del reproductor de audio") }}
+        {{ form_errors(multimedia.htmlCode) }}
+        {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use Bloq\Common\EntitiesBundle\Entity\User as AdminUser;
+use Bloq\Common\MultimediaBundle\Entity\Multimedia as MultimediaEntity;
 
 use AppBundle\Form\Type\UserCreationFormType as AdminUserCreationFormType;
 
@@ -59,9 +60,11 @@ class EditorController extends Controller
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
+            $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
         } else {
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
+            $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
         }
 
         $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent); 
@@ -70,7 +73,7 @@ class EditorController extends Controller
         
         if ($form->isValid()) {
             $editorialContent = $form->getData();
-            
+ladybug_dump($form->getData()->getMultimedias()->getValues());die;
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
@@ -132,6 +135,33 @@ class EditorController extends Controller
         return $site;
     }
 
+    private function setEdidtorialContentForForm($object)
+    {
+        $maxNumImgs = 5;
+        $maxNumSummaries = 3;
+        $maxNumSubtitles = 2;
+
+        $i = count($object->getMultimedias());
+        while ($i < $maxNumImgs) {
+            $multimedia = new MultimediaEntity();
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;
+        }
+        $i = count($object->getSummaries());
+        while ($i < $maxNumSummaries) {
+            $object->addSummary('');
+            $i++;
+        }
+        $i = count($object->getSubtitles());
+        while ($i < $maxNumSubtitles) {
+            $object->addSubtitle('');
+            $i++;
+        }
+
+        return $object;
+    }
+
     private function setContentsDatabaseConfig($site)
     {
         $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
@@ -141,4 +171,3 @@ class EditorController extends Controller
             );
     }
 }
-
