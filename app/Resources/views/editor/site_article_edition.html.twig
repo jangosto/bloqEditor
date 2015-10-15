@@ -69,8 +69,24 @@
         {{ tinymce_init() }}
     </span>
     <span class="col-3 pad">
+        {% set primaryImages = [] %}
+        {% set textImages = [] %}
+        {% set videos = [] %}
+        {% set audios = [] %}
+        {% for multimediaObject in form.multimedias %}
+            {% if multimediaObject.vars.value.type == 'image' and multimediaObject.vars.value.position == 'primary' %}
+                {% set primaryImages = primaryImages|merge([multimediaObject]) %}
+            {% elseif multimediaObject.vars.value.type == 'image' %}
+                {% set textImages = textImages|merge([multimediaObject]) %}
+            {% elseif multimediaObject.vars.value.type == 'video' %}
+                {% set videos = videos|merge([multimediaObject]) %}
+            {% elseif multimediaObject.vars.value.type == 'audio' %}
+                {% set audios = audios|merge([multimediaObject]) %}
+            {% endif %}
+        {% endfor %}
+
         <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
-        {% set multimedia = form.multimedias.0 %}
+        {% for multimedia in primaryImages %}
         {% if multimedia.url is defined and multimedia.url|length > 0 %}
         <label>Imagen Principal</label>
         <span class="caja-imagen">
@@ -90,12 +106,15 @@
             {{ form_label(multimedia.file, "O sube una imagen") }}
             {{ form_errors(multimedia.file) }}
             {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
+            {{ form_widget(multimedia.position, { 'attr':{ 'hidden': 'true' } }) }}
+            {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
         {% endif %}
+        {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
-        {% set multimedia = form.multimedias.1 %}
+        {% for multimedia in textImages %}
         {% if multimedia.url is defined and multimedia.url|length > 0 %}
-        <label>Imagen en Texto 1</label>
+        <label>Imagen en Texto {{ loop.index }}</label>
         <span class="caja-imagen">
             <span class="tarjeta imagen">
                 <img alt="" src="{{ multimedia.url }}">
@@ -107,35 +126,15 @@
             </span>
         </span>
         {% else %}
-            <label for="imagen_ppal">ID de la imagen</label>
-            <input id="imagen_ppal" class="texto" type="text">
+            <label for="imagen_ppal">ID de la imagen en texto {{ loop.index }}</label>
+            <input id="imagen_text_{{ loop.index }}" class="texto" type="text">
 
-            {{ form_label(multimedia.file, "O sube una imagen") }}
+            {{ form_label(multimedia.file, "O sube la imagen en text "~loop.index) }}
             {{ form_errors(multimedia.file) }}
             {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
+            {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
         {% endif %}
-
-        {% set multimedia = form.multimedias.2 %}
-        {% if multimedia.url is defined and multimedia.url|length > 0 %}
-        <label>Imagen en Texto 2</label>
-        <span class="caja-imagen">
-            <span class="tarjeta imagen">
-                <img alt="" src="{{ multimedia.url }}">
-                <span class="botones der">
-                    <a class="boton cuadrado blanco descartar" href="javascript:void(0)">
-                        <span class="icono icon icon-eliminar"></span>
-                    </a>
-                </span>
-            </span>
-        </span>
-        {% else %}
-            <label for="imagen_ppal">ID de la imagen</label>
-            <input id="imagen_ppal" class="texto" type="text">
-
-            {{ form_label(multimedia.file, "O sube una imagen") }}
-            {{ form_errors(multimedia.file) }}
-            {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
-        {% endif %}
+        {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
         {% for summary in form.summaries %}
@@ -145,16 +144,20 @@
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Vídeo</legend>
-        {% set multimedia = form.multimedias.3 %}
+        {% for multimedia in videos %}
         {{ form_label(multimedia.htmlCode, "Código del reproductor de vídeo") }}
         {{ form_errors(multimedia.htmlCode) }}
         {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
+        {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
+        {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Audio</legend>
-        {% set multimedia = form.multimedias.4 %}
+        {% for multimedia in audios %}
         {{ form_label(multimedia.htmlCode, "Código del reproductor de audio") }}
         {{ form_errors(multimedia.htmlCode) }}
         {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
+        {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
+        {% endfor %}
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>

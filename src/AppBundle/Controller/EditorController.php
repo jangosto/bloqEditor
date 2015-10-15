@@ -60,20 +60,26 @@ class EditorController extends Controller
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
-            $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
         } else {
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
-            $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
         }
 
-        $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent); 
-
-        $form->handleRequest($request);
+        $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent);
         
+        $form->handleRequest($request);
+
         if ($form->isValid()) {
             $editorialContent = $form->getData();
-ladybug_dump($form->getData()->getMultimedias()->getValues());die;
+
+            $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
+            /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
+            foreach ($editorialContent->getMultimedias() as $multimedia) {
+                $multimediaManager->save($multimedia);
+            }*/
+
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
@@ -88,6 +94,8 @@ ladybug_dump($form->getData()->getMultimedias()->getValues());die;
             $response = new RedirectResponse($url);
             return $response;
         }
+        
+        $form->setData($this->setEdidtorialContentForForm($form->getData()));
 
         return $this->render('editor/site_'.$editorialContentType.'_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -137,17 +145,64 @@ ladybug_dump($form->getData()->getMultimedias()->getValues());die;
 
     private function setEdidtorialContentForForm($object)
     {
-        $maxNumImgs = 5;
+        $maxNumPrimaryImgs = 1;
+        $maxNumTextImgs = 2;
+        $maxNumVideos = 1;
+        $maxNumAudios = 1;
         $maxNumSummaries = 3;
         $maxNumSubtitles = 2;
 
-        $i = count($object->getMultimedias());
-        while ($i < $maxNumImgs) {
+        $numPrimaryImgs = 0;
+        $numTextImgs = 0;
+        $numVideos = 0;
+        $numAudios = 0;
+        foreach ($object->getMultimedias() as $multimedia) {
+            if ($multimedia->getType() == 'image') {
+                if ($multimedia->getPosition() == "primary") {
+                    $numPrimaryImgs++;
+                } else {
+                    $numTextImgs++;
+                }
+            } elseif ($multimedia->getType() == 'video') {
+                $numVideos++;
+            } elseif ($multimedia->getType() == 'audio') {
+                $numAudios++;
+            }
+        }
+        $i = $numPrimaryImgs;
+        while ($i < $maxNumPrimaryImgs) {
             $multimedia = new MultimediaEntity();
+            $multimedia->setType('image');
+            $multimedia->setPosition('primary');
             $object->getMultimedias()->add($multimedia);
             unset($multimedia);
             $i++;
         }
+        $i = $numTextImgs;
+        while ($i < $maxNumTextImgs) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('image');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;
+        }
+        $i = $numVideos;
+        while ($i < $maxNumVideos) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('video');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;              
+        }
+        $i = $numAudios;
+        while ($i < $maxNumAudios) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('audio');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;              
+        }
+
         $i = count($object->getSummaries());
         while ($i < $maxNumSummaries) {
             $object->addSummary('');
@@ -157,6 +212,36 @@ ladybug_dump($form->getData()->getMultimedias()->getValues());die;
         while ($i < $maxNumSubtitles) {
             $object->addSubtitle('');
             $i++;
+        }
+
+        return $object;
+    }
+
+    private function cleanEditorialContentToPersist($object)
+    {
+        foreach ($object->getMultimedias() as $key => $multimedia) {
+            if ($multimedia->getUrl() == null && $multimedia->getFile() == null && $multimedia->getHtmlCode() == null) {
+                $object->getMultimedias()->remove($key);
+            }
+        }
+
+/*        while ($object->getMultimedias()->next()) {
+ladybug_dump($object->getMultimedias()->current());
+            if ($object->getMultimedias()->current()->getUrl() == null && $object->getMultimedias()->current()->getFile() == null && $object->getMultimedias()->current()->getHtmlCode() == null) {
+                $object->getMultimedias()->removeElement($object->getMultimedias()->current());
+            }
+}*/
+
+        foreach ($object->getSubtitles() as $key => $subtitle) {
+            if ($subtitle == null || strlen($subtitle) == 0) {
+                $object->removeSubtitle($key);
+            }
+        }
+
+        foreach ($object->getSummaries() as $key => $summary) {
+            if ($summary == null || strlen($summary) == 0) {
+                $object->removeSummary($key);
+            }
         }
 
         return $object;
