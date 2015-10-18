@@ -280,15 +280,15 @@ class EditorController extends Controller
     private function setEditorialContentDates($object, $isPublished)
     {
         if (!isset($object->getCreatedDT)) {
-            $object->setCreatedDT($time);
+            $object->setCreatedDT(time());
         }
 
         if (!isset($object->getCreatedDT) && $isPublished) {
-            $object->setCreatedDT($time);
+            $object->setCreatedDT(time());
         }
 
         if ($isPublished) {
-            $object->setUpdatedDT($time);
+            $object->setUpdatedDT(time());
         }
     }
 }
