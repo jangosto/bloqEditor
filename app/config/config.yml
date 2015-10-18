@@ -12,9 +12,9 @@ parameters:
         article:
             pretty_name: Artículo
             menu_class: articulos
-        gallery:
-            pretty_name: Galería
-            menu_class: galerias
+#        gallery:
+#            pretty_name: Galería
+#            menu_class: galerias
 
 framework:
     #esi:             ~
