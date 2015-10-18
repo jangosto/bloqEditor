@@ -79,18 +79,13 @@ class EditorController extends Controller
             $editorialContent = $form->getData();
 
             $editorialContent = $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
-            ladybug_dump($editorialContent);
             $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
-            ladybug_dump($editorialContent);
             $editorialContent = $this->setEditorialContentAuthors($editorialContent);
-            ladybug_dump($editorialContent);
             $editorialContent = $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
-            ladybug_dump($editorialContent);
             /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
             foreach ($editorialContent->getMultimedias() as $multimedia) {
                 $multimediaManager->save($multimedia);
             }*/
-ladybug_dump($editorialContent);
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
