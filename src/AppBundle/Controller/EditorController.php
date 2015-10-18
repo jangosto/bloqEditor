@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use Bloq\Common\EntitiesBundle\Entity\User as AdminUser;
+use Bloq\Common\MultimediaBundle\Entity\Multimedia as MultimediaEntity;
 
 use AppBundle\Form\Type\UserCreationFormType as AdminUserCreationFormType;
 
@@ -59,18 +60,29 @@ class EditorController extends Controller
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
+            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
         } else {
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
+            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
         }
 
-        $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent); 
-
-        $form->handleRequest($request);
+        $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent);
         
+        $form->handleRequest($request);
+
         if ($form->isValid()) {
             $editorialContent = $form->getData();
-            
+
+            $editorialContent = $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
+            $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
+            $editorialContent = $this->setEditorialContentAuthors($editorialContent);
+            $editorialContent = $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
+            /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
+            foreach ($editorialContent->getMultimedias() as $multimedia) {
+                $multimediaManager->save($multimedia);
+            }*/
+
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
@@ -85,6 +97,8 @@ class EditorController extends Controller
             $response = new RedirectResponse($url);
             return $response;
         }
+
+        $form->setData($this->setEdidtorialContentForForm($form->getData()));
 
         return $this->render('editor/site_'.$editorialContentType.'_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -132,6 +146,104 @@ class EditorController extends Controller
         return $site;
     }
 
+    private function setEdidtorialContentForForm($object)
+    {
+        $maxNumPrimaryImgs = 1;
+        $maxNumTextImgs = 2;
+        $maxNumVideos = 1;
+        $maxNumAudios = 1;
+        $maxNumSummaries = 3;
+        $maxNumSubtitles = 2;
+
+        $numPrimaryImgs = 0;
+        $numTextImgs = 0;
+        $numVideos = 0;
+        $numAudios = 0;
+
+        foreach ($object->getMultimedias() as $multimedia) {
+            if ($multimedia->getType() == 'image') {
+                if ($multimedia->getPosition() == "primary") {
+                    $numPrimaryImgs++;
+                } else {
+                    $numTextImgs++;
+                }
+            } elseif ($multimedia->getType() == 'video') {
+                $numVideos++;
+            } elseif ($multimedia->getType() == 'audio') {
+                $numAudios++;
+            }
+        }
+        $i = $numPrimaryImgs;
+        while ($i < $maxNumPrimaryImgs) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('image');
+            $multimedia->setPosition('primary');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;
+        }
+        $i = $numTextImgs;
+        while ($i < $maxNumTextImgs) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('image');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;
+        }
+        $i = $numVideos;
+        while ($i < $maxNumVideos) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('video');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;              
+        }
+        $i = $numAudios;
+        while ($i < $maxNumAudios) {
+            $multimedia = new MultimediaEntity();
+            $multimedia->setType('audio');
+            $object->getMultimedias()->add($multimedia);
+            unset($multimedia);
+            $i++;              
+        }
+
+        $i = count($object->getSummaries());
+        while ($i < $maxNumSummaries) {
+            $object->addSummary('');
+            $i++;
+        }
+        $i = count($object->getSubtitles());
+        while ($i < $maxNumSubtitles) {
+            $object->addSubtitle('');
+            $i++;
+        }
+
+        return $object;
+    }
+
+    private function cleanEditorialContentToPersist($object)
+    {
+        foreach ($object->getMultimedias() as $key => $multimedia) {
+            if ($multimedia->getPath() == null && $multimedia->getFile() == null && $multimedia->getHtmlCode() == null) {
+                $object->getMultimedias()->remove($key);
+            }
+        }
+
+        foreach ($object->getSubtitles() as $subtitle) {
+            if ($subtitle == null || strlen($subtitle) == 0) {
+                $object->removeSubtitle($subtitle);
+            }
+        }
+
+        foreach ($object->getSummaries() as $summary) {
+            if ($summary == null || strlen($summary) == 0) {
+                $object->removeSummary($summary);
+            }
+        }
+
+        return $object;
+    }
+
     private function setContentsDatabaseConfig($site)
     {
         $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
@@ -140,5 +252,43 @@ class EditorController extends Controller
                 $this->container->getParameter($site.'.content.database_password')
             );
     }
-}
 
+    private function saveUploadedMultimedias($editorialObject, $siteObject)
+    {
+        foreach ($editorialObject->getMultimedias() as $key => $multimedia) {
+            if ($multimedia->getType() == "image" && $multimedia->getFile() !== null) {
+                $uploadPath = $this->container->getParameter('multimedia.images.save.path');
+                $extension = $multimedia->getFile()->guessExtension();
+                $relDir = $uploadPath."/".date("Y/md")."/";
+                $absDir = $siteObject->getDomainPath().$relDir;
+                $filename = rand(1, 9999999).'.'.$extension;
+                $multimedia->getFile()->move($absDir, $filename);
+                $editorialObject->getMultimedias()[$key]->setPath($relDir.$filename);
+            }
+        }
+        
+        return $editorialObject;
+    }
+
+    private function setEditorialContentAuthors($object)
+    {
+        $object->addAuthor($this->getUser()->getId());
+
+        return $object;
+    }
+
+    private function setEditorialContentDates($object, $isPublished)
+    {
+        if (!isset($object->getCreatedDT)) {
+            $object->setCreatedDT(time());
+        }
+
+        if (!isset($object->getCreatedDT) && $isPublished) {
+            $object->setCreatedDT(time());
+        }
+
+        if ($isPublished) {
+            $object->setUpdatedDT(time());
+        }
+    }
+}

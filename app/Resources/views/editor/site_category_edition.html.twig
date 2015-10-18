@@ -1,0 +1,52 @@
+{% extends "editor/layout.html.twig" %}
+
+{% block siteActionHeader %}
+<span class="col-12 pad">
+    <h1 class="titulo cuerpo tam38 rojo-500">Edición de Secciones</h1>
+</span>
+{% endblock %}
+
+{% block siteActionContent %}
+<span class="col-5 pad">
+    <form class="col-12 clear" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
+        {{ form_label(form.name, "Nombre de la Categoría") }}
+        {{ form_errors(form.name) }}
+        {{ form_widget(form.name, { 'attr': { 'class': 'texto grande' } }) }}
+
+        {{ form_label(form.slug, "Slug de la Categoría") }}
+        {{ form_errors(form.slug) }}
+        {{ form_widget(form.slug, { 'attr': { 'class': 'texto' } }) }}
+
+        {{ form_label(form.description, "Descripción de la Categoría") }}
+        {{ form_errors(form.description) }}
+        {{ form_widget(form.description, { 'attr': { 'rows': '3' } }) }}
+
+        {{ form_label(form.parentId, "Padre de la Categoría") }}
+        {{ form_widget(form.parentId) }}
+
+        {{ form_widget(form.save, { 'label': "Guardar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
+        {{ form_widget(form._token) }}
+    </form>
+</span>
+<span class="col-7 pad">
+    <table>
+        <tbody>
+            <tr>
+                <th>Nombre</th>
+                <th>Slug</th>
+                <th>Padre</th>
+                <th>Editar</th>
+            </tr>
+            {% for category in categories %}
+            <tr>
+                <th>{{ category.name }}</th>
+                <th>{{ category.slug }}</th>
+                <th>{% if category.parentId != null %}{{ categories[category.parentId].name }}{% endif %}</th>
+                <th><a class="boton cuadrado negro" href="{{ url('site_editor_category_edition', {'site': currentSite.slug, 'id': category.id}) }}"><span class="icono icon icon-editar"></span></a></th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</span>
+{% endblock %}
+

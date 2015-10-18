@@ -1,0 +1,52 @@
+{% extends "editor/layout.html.twig" %}
+
+{% block siteActionHeader %}
+<span class="col-12 pad">
+    <h1 class="titulo cuerpo tam38 rojo-500">Edición de Tags</h1>
+</span>
+{% endblock %}
+
+{% block siteActionContent %}
+<span class="col-5 pad">
+    <form class="col-12 clear" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
+        {{ form_label(form.name, "Nombre del Tag") }}
+        {{ form_errors(form.name) }}
+        {{ form_widget(form.name, { 'attr': { 'class': 'texto grande' } }) }}
+
+        {{ form_label(form.slug, "Slug del Tag") }}
+        {{ form_errors(form.slug) }}
+        {{ form_widget(form.slug, { 'attr': { 'class': 'texto' } }) }}
+
+        {{ form_label(form.description, "Descripción del Tag") }}
+        {{ form_errors(form.description) }}
+        {{ form_widget(form.description, { 'attr': { 'rows': '3' } }) }}
+
+        {{ form_label(form.parentId, "Padre del Tag") }}
+        {{ form_widget(form.parentId) }}
+
+        {{ form_widget(form.save, { 'label': "Guardar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
+        {{ form_widget(form._token) }}
+    </form>
+</span>
+<span class="col-7 pad">
+    <table>
+        <tbody>
+            <tr>
+                <th>Nombre</th>
+                <th>Slug</th>
+                <th>Padre</th>
+                <th>Editar</th>
+            </tr>
+            {% for tag in tags %}
+            <tr>
+                <th>{{ tag.name }}</th>
+                <th>{{ tag.slug }}</th>
+                <th>{% if tag.parentId != null %}{{ tags[tag.parentId].name }}{% endif %}</th>
+                <th><a class="boton cuadrado negro" href="{{ url('site_editor_tag_edition', {'site': currentSite.slug, 'id': tag.id}) }}"><span class="icono icon icon-editar"></span></a></th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</span>
+{% endblock %}
+

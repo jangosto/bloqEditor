@@ -112,16 +112,20 @@ doctrine:
                 connection:     creator
                 mappings:
                     BloqEditorBundle: ~
+                    BloqMultimediaBundle: ~
                     AppBundle:  ~
                 naming_strategy: doctrine.orm.naming_strategy.underscore
             content:
                 connection:     dynamic
                 mappings:
                     BloqEditorBundle: ~
+                    BloqMultimediaBundle: ~
                     AppBundle:  ~
                 naming_strategy: doctrine.orm.naming_strategy.underscore
 
         auto_generate_proxy_classes: "%kernel.debug%"
+        resolve_target_entities:
+            Bloq\Common\EditorBundle\Entity\EditorialContentInterface: %article.model_class%
         #naming_strategy: doctrine.orm.naming_strategy.underscore
         #auto_mapping: true
 
@@ -155,7 +159,7 @@ stfalcon_tinymce:
         simple:
             theme: "advanced" #"modern"
             menubar: false
-            toolbar1: "bold italic | styleselect | alignleft aligncenter alignright alignjustify | undo redo | link"
+            toolbar1: "bold italic | styleselect | alignleft aligncenter alignright alignjustify | undo redo | link unlink"
             #toolbar2: "print preview media | forecolor backcolor emoticons | stfalcon | hello_world"
             plugins:
                 - "advlist autolink lists link image charmap print preview hr anchor pagebreak"
