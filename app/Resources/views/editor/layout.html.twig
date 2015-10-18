@@ -24,9 +24,9 @@
 {% block header %}
     <header class="bg-gris-100 clear">
         <span class="titulo tam24 rojo-500"><strong>fanatic</strong>.futbol{% block breadcrumb %}{% endblock %}</span>
-        <img src="{{ statics_domain }}/img/angel-grande.jpg" alt="Ángel Ruiz Jiménez" class="avatar">
+{#        <img src="{{ statics_domain }}/img/angel-grande.jpg" alt="Ángel Ruiz Jiménez" class="avatar"> #}
         <menu class="botones der">
-            <span class="desplegable">
+{#            <span class="desplegable">
                 <a href="javascript:void(0)" class="boton cuadrado negro desplegador" title="Alertas"><span class="icon icon-alertas icono"><span class="globo"></span></span></a>
                 <span class="persiana der bg-blanco alertas">
                     <ul>
@@ -48,7 +48,8 @@
                 </span>
             </span>
             <a href="ajustes-cuenta.html" class="boton cuadrado negro" title="Ajustes de mi cuenta"><span class="icon icon-ajustes icono"></span></a>
-            <a href="cerrar-sesion.html" class="boton cuadrado negro" title="Cerrar sesión"><span class="icon icon-cerrar icono"></span></a>
+#}
+            <a href="{{ path('fos_user_security_logout') }}" class="boton cuadrado negro" title="Cerrar sesión"><span class="icon icon-cerrar icono"></span></a>
         </menu>
     </header>
 {% endblock %}
@@ -68,14 +69,15 @@
         <a href="{{ url('site_editor_tag_edition', {'site': currentSite.slug, 'id': 'new'}) }}" class="boton cuadrado blanco" title="Editor de Tags"><span class="icono icon"></span><span class="accion">Editor de Tags</span></a>
         {% endif %}
         {% for key, editorialContent in editorial_contents %}
-        <a href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': key}) }}" class="boton cuadrado blanco {{ editorialContent.menu_class }}" title="{{ editorialContent.pretty_name }}"><span class="icono icon icon-{{ editorialContent.menu_class }}"></span><span class="accion">{{ editorialContent.pretty_name }}</span></a>
+        <a href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': key, 'filter': 'published'}) }}" class="boton cuadrado blanco {{ editorialContent.menu_class }}" title="{{ editorialContent.pretty_name }}"><span class="icono icon icon-{{ editorialContent.menu_class }}"></span><span class="accion">{{ editorialContent.pretty_name }}</span></a>
         {% endfor %}
-        <!-- === <a href="perfiles.html" class="boton cuadrado blanco perfiles" title="Perfiles"><span class="icono icon icon-perfiles"></span><span class="accion">Perfiles</span></a> === -->
+{#        <a href="perfiles.html" class="boton cuadrado blanco perfiles" title="Perfiles"><span class="icono icon icon-perfiles"></span><span class="accion">Perfiles</span></a>
         <a href="comentarios.html" class="boton cuadrado blanco comentarios" title="Comentarios"><span class="icono icon icon-comentarios"></span><span class="accion">Comentarios</span></a>
         <a href="multimedia.html" class="boton cuadrado blanco multimedia" title="Multimedia"><span class="icono icon icon-multimedia"></span><span class="accion">Multimedia</span></a>
         <a href="ajustes-publicacion.html" class="boton cuadrado blanco ajustes" title="Ajustes de publicación"><span class="icon icon-configuracion icono"></span><span class="accion">Ajustes de publicación</span></a>
+#}
     {% endif %}
-        <a href="ayuda.html" class="boton cuadrado blanco ayuda" title="Ayuda"><span class="icono icon icon-ayuda"></span><span class="accion">Ayuda</span></a>
+{#        <a href="ayuda.html" class="boton cuadrado blanco ayuda" title="Ayuda"><span class="icono icon icon-ayuda"></span><span class="accion">Ayuda</span></a> #}
     </nav>
 {% endblock %}
 

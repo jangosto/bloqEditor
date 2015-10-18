@@ -34,17 +34,31 @@ class EditorController extends Controller
     }
 
     /**
-     * @Route("/{editorialContentType}/", name="site_editor_editorial_content_list")
+     * @Route("/{editorialContentType}/{filter}/", name="site_editor_editorial_content_list", requirements={"filter": "published|removed|saved"})
      */
-    public function siteEditorialContentListAction(Request $request, $site, $editorialContentType)
+    public function siteEditorialContentListAction(Request $request, $site, $editorialContentType, $filter)
     {
+        $status = array("published", "removed", "saved");
         $siteObjects = $this->getCurrentSiteBySlug($site);
         $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        
+        $contents = array();
+        $numContents = array();
+        $editorialContentManager = $this->container->get('editor.article.manager');
+        foreach ($status as $state) {
+            $contentsTmp = $editorialContentManager->getAllByStatus($state);
+            $numContents[$state] = count($contentsTmp);
+            if ($filter == $state) {
+                $contents = $contentsTmp;
+            }
+        }
 
         return $this->render('editor/site_'.$editorialContentType.'_list.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
-            'currentEditorialContent' => $editorialContentType
+            'currentEditorialContent' => $editorialContentType,
+            'contents' => $contents,
+            'numContents' => $numContents
         ));
     }
 
@@ -60,11 +74,15 @@ class EditorController extends Controller
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
-            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            if (!$request->request->has('save') && !$request->request->has('publish')) {
+                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            }
         } else {
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
-            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            if (!$request->request->has('save') && !$request->request->has('publish')) {
+                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            }
         }
 
         $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent);
@@ -73,6 +91,11 @@ class EditorController extends Controller
 
         if ($form->isValid()) {
             $editorialContent = $form->getData();
+            if ($form->get('publish')->isClicked()) {
+                $editorialContent->setStatus("published");
+            } elseif($form->get('save')->isClicked()) {
+                $editorialContent->setStatus("saved");
+            }
 
             $editorialContent = $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
             $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
@@ -82,7 +105,6 @@ class EditorController extends Controller
             foreach ($editorialContent->getMultimedias() as $multimedia) {
                 $multimediaManager->save($multimedia);
             }*/
-
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
@@ -97,8 +119,6 @@ class EditorController extends Controller
             $response = new RedirectResponse($url);
             return $response;
         }
-
-        $form->setData($this->setEdidtorialContentForForm($form->getData()));
 
         return $this->render('editor/site_'.$editorialContentType.'_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -279,16 +299,18 @@ class EditorController extends Controller
 
     private function setEditorialContentDates($object, $isPublished)
     {
-        if (!isset($object->getCreatedDT)) {
-            $object->setCreatedDT(time());
+        if ($object->getCreatedDT() === null) {
+            $object->setCreatedDT(new \DateTime("now"));
         }
 
-        if (!isset($object->getCreatedDT) && $isPublished) {
-            $object->setCreatedDT(time());
+        if ($object->getPublishedDT() === null && $isPublished) {
+            $object->setPublishedDT(new \DateTime("now"));
         }
 
         if ($isPublished) {
-            $object->setUpdatedDT(time());
+            $object->setUpdatedDT(new \DateTime("now"));
         }
+
+        return $object;
     }
 }

@@ -4,6 +4,40 @@
 
 {% block siteActionContent %}
 <span class="col-12 clear">
-    <a href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': 'new'}) }}">Crear nueva Noticia</a>
+    <h1 class="titulo tam38 rojo-500">Artículos</h1>
+</span>
+<span class="col-12 clear">
+    <span class="medio">
+        <ul class="pestanas">
+            <li><a class="opcion activa" href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': 'published' }) }}">Publicados ({{ numContents.published }})</a></li>
+            <li><a class="opcion activa" href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': 'saved' }) }}">Borradores ({{ numContents.saved }})</a></li>
+            <li><a class="opcion activa" href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': 'removed' }) }}">Papelera ({{ numContents.removed }})</a></li>
+        </ul>
+    </span>
+    <span class="botones der medio">
+        <a class="boton azul" href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': 'new'}) }}">
+            <span class="icono icon icon-sumar"></span>
+            <span class="icono icon icon-articulos"></span>
+            <span class="accion">Nuevo artículo</span>
+        </a>
+    </span>
+    <span class="col-12 pad">
+        <table>
+            <tbody>
+                <tr>
+                    <th>Fecha</th>
+                    <th class="ppal">Título</th>
+                    <th></th>
+                </tr>
+                {% for content in contents %}
+                <tr>
+                    <th>{{ content.createdDT|date("d/m/Y") }}</th>
+                    <th class="ppal">{{ content.title }}</th>
+                    <th><a class="boton cuadrado negro" href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}"><span class="icono icon icon-editar"></span></a></th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </span>
 </span>
 {% endblock %}
