@@ -60,11 +60,15 @@ class EditorController extends Controller
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
-            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            if (!$request->request->has('save') && !$request->request->has('publish')) {
+                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            }
         } else {
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
-            //$editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            if (!$request->request->has('save') && !$request->request->has('publish')) {
+                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
+            }
         }
 
         $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent);
@@ -75,14 +79,18 @@ class EditorController extends Controller
             $editorialContent = $form->getData();
 
             $editorialContent = $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
+            ladybug_dump($editorialContent);
             $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
+            ladybug_dump($editorialContent);
             $editorialContent = $this->setEditorialContentAuthors($editorialContent);
+            ladybug_dump($editorialContent);
             $editorialContent = $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
+            ladybug_dump($editorialContent);
             /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
             foreach ($editorialContent->getMultimedias() as $multimedia) {
                 $multimediaManager->save($multimedia);
             }*/
-
+ladybug_dump($editorialContent);
             $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContentManager->save($editorialContent);
 
@@ -97,8 +105,6 @@ class EditorController extends Controller
             $response = new RedirectResponse($url);
             return $response;
         }
-
-        $form->setData($this->setEdidtorialContentForForm($form->getData()));
 
         return $this->render('editor/site_'.$editorialContentType.'_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -280,15 +286,17 @@ class EditorController extends Controller
     private function setEditorialContentDates($object, $isPublished)
     {
         if (!isset($object->getCreatedDT)) {
-            $object->setCreatedDT(time());
+            $object->setCreatedDT(new \DateTime("now"));
         }
 
-        if (!isset($object->getCreatedDT) && $isPublished) {
-            $object->setCreatedDT(time());
+        if (!isset($object->getPublishedDT) && $isPublished) {
+            $object->setPublishedDT(new \DateTime("now"));
         }
 
         if ($isPublished) {
-            $object->setUpdatedDT(time());
+            $object->setUpdatedDT(new \DateTime("now"));
         }
+
+        return $object;
     }
 }
