@@ -1,5 +1,7 @@
 {% extends "editor/layout.html.twig" %}
 
+{% block bodyId %}panel{% endblock %}
+
 {% block siteActionHeader %}
 <span class="col-12 pad">
     <h1 class="titulo cuerpo tam38 rojo-500">Edición de Artículo</h1>
@@ -87,53 +89,88 @@
 
         <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
         {% for multimedia in primaryImages %}
-        {% if multimedia.url is defined and multimedia.url|length > 0 %}
+        {% set formHtml =
+            '<label for="imagen_ppal">ID de la imagen</label>'
+            ~ '<input id="imagen_ppal" class="texto" type="text">'
+            
+            ~ form_label(multimedia.file, "O sube una imagen")
+            ~ form_errors(multimedia.file)
+            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
+            ~ form_widget(multimedia.position, { 'attr':{ 'hidden': 'true' } })
+            ~ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } })
+        %}
+        <div id="primary_image_form_{{ loop.index }}">
+        {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
         <label>Imagen Principal</label>
         <span class="caja-imagen">
             <span class="tarjeta imagen">
-                <img alt="" src="{{ multimedia.url }}">
+                <img alt="" src="http://{{ currentSite.domain ~ multimedia.vars.data.path }}">
                 <span class="botones der">
-                    <a class="boton cuadrado blanco descartar" href="javascript:void(0)">
+                    <a class="boton cuadrado blanco descartar" id="remove_primary_image_{{ loop.index }}" href="#">
                         <span class="icono icon icon-eliminar"></span>
                     </a>
                 </span>
             </span>
         </span>
+        {{ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) }}
+        {{ form_widget(multimedia.position, { 'attr':{ 'hidden': 'true' } }) }}
+        {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
         {% else %}
-            <label for="imagen_ppal">ID de la imagen</label>
-            <input id="imagen_ppal" class="texto" type="text">
-
-            {{ form_label(multimedia.file, "O sube una imagen") }}
-            {{ form_errors(multimedia.file) }}
-            {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
-            {{ form_widget(multimedia.position, { 'attr':{ 'hidden': 'true' } }) }}
-            {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
+            {{ formHtml|raw }}
         {% endif %}
+        </div>
+        <script>
+            jQuery("#remove_primary_image_{{ loop.index }}").click(function(){
+                if (window.confirm("¿Seguro que desea borrar la imagen?")) {
+                    jQuery("#primary_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
+                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                        buttonText: "<span class='icon icon-subir'></span>"
+                    });
+                }
+            });
+        </script>
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
         {% for multimedia in textImages %}
-        {% if multimedia.url is defined and multimedia.url|length > 0 %}
-        <label>Imagen en Texto {{ loop.index }}</label>
-        <span class="caja-imagen">
-            <span class="tarjeta imagen">
-                <img alt="" src="{{ multimedia.url }}">
-                <span class="botones der">
-                    <a class="boton cuadrado blanco descartar" href="javascript:void(0)">
-                        <span class="icono icon icon-eliminar"></span>
-                    </a>
-                </span>
-            </span>
-        </span>
-        {% else %}
-            <label for="imagen_ppal">ID de la imagen en texto {{ loop.index }}</label>
-            <input id="imagen_text_{{ loop.index }}" class="texto" type="text">
+        {% set formHtml = 
+            '<label for="imagen_ppal">ID de la imagen en texto ' ~ loop.index ~ '</label>'
+            ~ '<input id="imagen_text_' ~ loop.index ~ '" class="texto" type="text">'
 
-            {{ form_label(multimedia.file, "O sube la imagen en text "~loop.index) }}
-            {{ form_errors(multimedia.file) }}
-            {{ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } }) }}
-            {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
+            ~ form_label(multimedia.file, "O sube la imagen en text "~loop.index)
+            ~ form_errors(multimedia.file)
+            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
+            ~ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) 
+        %}
+        <div id="text_image_form_{{ loop.index }}">
+        {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
+            <label>Imagen en Texto {{ loop.index }}</label>
+            <span class="caja-imagen">
+                <span class="tarjeta imagen">
+                    <img alt="" src="http://{{ currentSite.domain ~ multimedia.vars.data.path }}">
+                    <span class="botones der">
+                        <a class="boton cuadrado blanco descartar" id="remove_text_image_{{ loop.index }}" href="#">
+                            <span class="icono icon icon-eliminar"></span>
+                       </a>
+                    </span>
+                </span>
+                {{ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) }}
+                {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
+            </span>
+        {% else %}
+            {{ formHtml|raw }}
         {% endif %}
+        </div>
+        <script>
+            jQuery("#remove_text_image_{{ loop.index }}").click(function(){
+                if (window.confirm("¿Seguro que desea borrar la imagen?")) {
+                    jQuery("#text_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
+                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                        buttonText: "<span class='icon icon-subir'></span>"
+                    });
+                }
+            });
+        </script>
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
@@ -161,10 +198,10 @@
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
-        {{ form_label(form.category, "Categría") }}
+        {{ form_label(form.category, "Sección") }}
         {{ form_errors(form.category) }}
         {{ form_widget(form.category) }}
-        <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar categoría como antetítulo</label>
+        <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar nombre de la sección como antetítulo</label>
         {{ form_label(form.tags, "Etiquetas") }}
         {{ form_errors(form.tags) }}
         {{ form_widget(form.tags) }}
@@ -178,8 +215,10 @@
         <input type="text" class="texto" id="fecha_publicacion" value="06/10/2015 12:58"><!-- este campo debe estar relleno automáticamente con la fecha y hora del momento de publicación -->
 #}
         <span class="botones">
-            <button type="submit" value="publish" class="boton azul"><span class="accion">Publicar</span></button>
-            <button type="submit" value="save" class="boton negro"><span class="accion">Guardar borrador</span></button>
+            {{ form_widget(form.publish, { 'label': "Publicar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
+            {{ form_widget(form.save, { 'label': "Guardar Borrador", 'attr': { 'type': 'submit', class: 'boton negro' } }) }}
+            <!-- === button type="submit" value="publish" class="boton azul"><span class="accion">Publicar</span></button>
+            <button type="submit" value="save" class="boton negro"><span class="accion">Guardar borrador</span></button === -->
         </span>
     </span>
     {{ form_widget(form._token) }}

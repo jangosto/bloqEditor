@@ -1,7 +1,7 @@
 bloq_editor:
     editorial_contents:
         article:
-            model_class: Bloq\Common\EditorBundle\Entity\Article
+            model_class: &articleModelClass Bloq\Common\EditorBundle\Entity\Article
             manager_class: Bloq\Common\EditorBundle\Manager\ArticleManager
             form_type_class: Bloq\Common\EditorBundle\Form\Type\ArticleFormType
             form_type_name: editor_article_edition
@@ -10,3 +10,6 @@ bloq_editor:
             manager_class: ~
             form_type_class: ~
             form_type_name: ~
+
+parameters:
+    article.model_class: *articleModelClass
