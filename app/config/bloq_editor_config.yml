@@ -5,11 +5,11 @@ bloq_editor:
             manager_class: Bloq\Common\EditorBundle\Manager\ArticleManager
             form_type_class: Bloq\Common\EditorBundle\Form\Type\ArticleFormType
             form_type_name: editor_article_edition
-        gallery:
-            model_class: ~
-            manager_class: ~
-            form_type_class: ~
-            form_type_name: ~
+#        gallery:
+#            model_class: ~
+#            manager_class: ~
+#            form_type_class: ~
+#            form_type_name: ~
 
 parameters:
     article.model_class: *articleModelClass

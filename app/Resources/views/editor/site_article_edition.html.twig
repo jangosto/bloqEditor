@@ -25,43 +25,6 @@
         {{ form_widget(subtitle, { 'attr': { 'class': 'texto' } }) }}
         {% endfor %}
 
-        {# {{ form_label(form.subtitles, "Subtítulos") }}
-        {{ form_errors(form.subtitles) }}
-        <ul id="subtitles-list" data-prototype="{{ form_widget(form.subtitles.vars.prototype)|e }}">
-        {% for subtitle in form.subtitles %}
-            <li>
-                {{ form_errors(subtitle) }}
-                {{ form_widget(subtitle, { 'attr': { 'class': 'texto' } }) }}
-                <button class='boton rojo delete-button'>X</button>
-            </li>
-        {% endfor %}
-        </ul>
-        <button id="add-subtitle-button" class="boton azul">Añadir subtítulos</button>
-        <script>
-            var subtitlesCount = '{{ form.subtitles|length }}';
-
-            jQuery(document).ready(function(){
-                jQuery('#add-subtitle-button').click(function(e){
-                    e.preventDefault();
-
-                    var subtitlesList = jQuery('#subtitles-list');
-
-                    var newWidget = subtitlesList.attr('data-prototype');
-                    newWidget = newWidget.replace(/__name__/g, subtitlesCount);
-                    newWidget = newWidget.replace('class="subtitle-box"', 'class="subtitle-box texto"');
-                    var newSubtitle = newWidget + "<button class='boton rojo delete-button'>X</button>";
-                    subtitlesCount++;
-
-                    var newLi = jQuery('<li></li>').html(newSubtitle);
-                    newLi.appendTo(subtitlesList);
-                });
-
-                jQuery(document).on('click', '.delete-button', function(e){
-                    jQuery(this).parent().remove();
-                });
-            });
-        </script> #}
-
         {{ form_label(form.intro, "Entradilla") }}
         {{ form_errors(form.intro) }}
         {{ form_widget(form.intro, { 'attr': { 'rows': '3' } }) }}
@@ -90,14 +53,9 @@
         <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
         {% for multimedia in primaryImages %}
         {% set formHtml =
-            '<label for="imagen_ppal">ID de la imagen</label>'
-            ~ '<input id="imagen_ppal" class="texto" type="text">'
-            
-            ~ form_label(multimedia.file, "O sube una imagen")
+            form_label(multimedia.file, "O sube una imagen")
             ~ form_errors(multimedia.file)
             ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
-            ~ form_widget(multimedia.position, { 'attr':{ 'hidden': 'true' } })
-            ~ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } })
         %}
         <div id="primary_image_form_{{ loop.index }}">
         {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
@@ -113,8 +71,6 @@
             </span>
         </span>
         {{ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) }}
-        {{ form_widget(multimedia.position, { 'attr':{ 'hidden': 'true' } }) }}
-        {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
         {% else %}
             {{ formHtml|raw }}
         {% endif %}
@@ -134,13 +90,9 @@
         <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
         {% for multimedia in textImages %}
         {% set formHtml = 
-            '<label for="imagen_ppal">ID de la imagen en texto ' ~ loop.index ~ '</label>'
-            ~ '<input id="imagen_text_' ~ loop.index ~ '" class="texto" type="text">'
-
-            ~ form_label(multimedia.file, "O sube la imagen en text "~loop.index)
+            form_label(multimedia.file, "Subir la imagen en texto "~loop.index)
             ~ form_errors(multimedia.file)
             ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
-            ~ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) 
         %}
         <div id="text_image_form_{{ loop.index }}">
         {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
@@ -155,7 +107,6 @@
                     </span>
                 </span>
                 {{ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) }}
-                {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
             </span>
         {% else %}
             {{ formHtml|raw }}
@@ -185,7 +136,6 @@
         {{ form_label(multimedia.htmlCode, "Código del reproductor de vídeo") }}
         {{ form_errors(multimedia.htmlCode) }}
         {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
-        {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Audio</legend>
@@ -193,26 +143,18 @@
         {{ form_label(multimedia.htmlCode, "Código del reproductor de audio") }}
         {{ form_errors(multimedia.htmlCode) }}
         {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
-        {{ form_widget(multimedia.type, { 'attr':{ 'hidden': 'true' } }) }}
         {% endfor %}
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
-        {{ form_label(form.category, "Sección") }}
+        <label for="" class="check">La funcionalidad de etiquetado y asignación de sección estará disponible próximamente. Gracias por su paciencia</label>
+{#        {{ form_label(form.category, "Sección") }}
         {{ form_errors(form.category) }}
         {{ form_widget(form.category) }}
         <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar nombre de la sección como antetítulo</label>
         {{ form_label(form.tags, "Etiquetas") }}
         {{ form_errors(form.tags) }}
         {{ form_widget(form.tags) }}
-
-{#        <legend class="titulo tam24 cuerpo rojo-500">Publicación</legend>
-        <label for="autor">Autor</label>
-        <input type="text" class="texto" id="autor"><!-- este campo debe estar relleno por defecto con el autor que está creando el artículo -->
-        <label for="" class="check"><input type="checkbox" checked="true">Enlazar facebook del autor</label>
-        <label for="" class="check"><input type="checkbox" checked="true">Enlazar twitter del autor</label>
-        <label for="fecha_publicacion">Fecha de publicación</label>
-        <input type="text" class="texto" id="fecha_publicacion" value="06/10/2015 12:58"><!-- este campo debe estar relleno automáticamente con la fecha y hora del momento de publicación -->
 #}
         <span class="botones">
             {{ form_widget(form.publish, { 'label': "Publicar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
