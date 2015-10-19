@@ -1,6 +1,7 @@
 /web/bundles/
 /web/static/
 /web/fonts/
+/web/uploads/
 /app/bootstrap.php.cache
 /app/sessions/
 /app/cache/*

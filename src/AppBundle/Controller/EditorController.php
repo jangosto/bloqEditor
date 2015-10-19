@@ -278,12 +278,16 @@ class EditorController extends Controller
         foreach ($editorialObject->getMultimedias() as $key => $multimedia) {
             if ($multimedia->getType() == "image" && $multimedia->getFile() !== null) {
                 $uploadPath = $this->container->getParameter('multimedia.images.save.path');
+                $domainPath = $this->container->getParameter('editor.domain.path');
+                $relImagesDirUrl = $this->container->getParameter('multimedia.images.dir.rel_url');
                 $extension = $multimedia->getFile()->guessExtension();
-                $relDir = $uploadPath."/".date("Y/md")."/";
-                $absDir = $siteObject->getDomainPath().$relDir;
+                $dateDirPart = date("Y/md");
+                $relDirPath = str_replace("{site_domain}", $siteObject->getSlug(), $uploadPath)."/".$dateDirPart."/";
+                $relDirUrl = $relImagesDirUrl."/".$dateDirPart."/";
+                $absDir = $domainPath.$relDirPath;
                 $filename = rand(1, 9999999).'.'.$extension;
                 $multimedia->getFile()->move($absDir, $filename);
-                $editorialObject->getMultimedias()[$key]->setPath($relDir.$filename);
+                $editorialObject->getMultimedias()[$key]->setPath($relDirUrl.$filename);
             }
         }
         
