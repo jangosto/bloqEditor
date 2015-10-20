@@ -44,7 +44,7 @@ class EditorController extends Controller
         
         $contents = array();
         $numContents = array();
-        $editorialContentManager = $this->container->get('editor.article.manager');
+        $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
         foreach ($status as $state) {
             $contentsTmp = $editorialContentManager->getAllByStatus($state);
             $numContents[$state] = count($contentsTmp);
@@ -125,6 +125,46 @@ class EditorController extends Controller
             'currentSite' => $siteObjects[0],
             "form" => $form->createView()
         ));
+    }
+
+    /**
+     * @Route("/{editorialContentType}/{id}/remove/", name="site_editor_editorial_content_remove")
+     */
+    public function siteEditorialContentRemoveAction(Request $request, $site, $editorialContentType, $id)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+
+        $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
+
+        $editorialContent = $editorialContentManager->getById($id);
+        $editorialContent->setStatus('removed');
+
+        $editorialContentManager->save($editorialContent);
+
+        $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        return $response;
+    }
+
+    /**
+     * @Route("/{editorialContentType}/{id}/restore/", name="site_editor_editorial_content_restore")
+     */
+    public function siteEditorialContentRestoreAction(Request $request, $site, $editorialContentType, $id)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+
+        $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
+
+        $editorialContent = $editorialContentManager->getById($id);
+        $editorialContent->setStatus('saved');
+
+        $editorialContentManager->save($editorialContent);
+
+        $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        return $response;
     }
 
     private function getRolesForUser()
