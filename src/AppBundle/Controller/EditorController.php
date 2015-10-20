@@ -280,6 +280,7 @@ class EditorController extends Controller
                 $uploadPath = $this->container->getParameter('multimedia.images.save.path');
                 $domainPath = $this->container->getParameter('editor.domain.path');
                 $relImagesDirUrl = $this->container->getParameter('multimedia.images.dir.rel_url');
+
                 $extension = $multimedia->getFile()->guessExtension();
                 $dateDirPart = date("Y/md");
                 $relDirPath = str_replace("{site_domain}", $siteObject->getSlug(), $uploadPath)."/".$dateDirPart."/";
@@ -287,7 +288,7 @@ class EditorController extends Controller
                 $absDir = $domainPath.$relDirPath;
                 $filename = rand(1, 9999999).'.'.$extension;
                 $multimedia->getFile()->move($absDir, $filename);
-                $editorialObject->getMultimedias()[$key]->setPath($relDirUrl.$filename);
+                $editorialObject->getMultimedias()[$key]->setPath("/".$dateDirPart."/".$filename);
             }
         }
         
