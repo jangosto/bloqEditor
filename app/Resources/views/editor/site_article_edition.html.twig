@@ -62,7 +62,7 @@
         <label>Imagen Principal</label>
         <span class="caja-imagen">
             <span class="tarjeta imagen">
-                <img alt="" src="{{ currentSite.domain ~ multimedia.vars.data.path }}">
+                <img alt="" src="{{ relative_images_path|replace({'{site_domain}': currentSite.slug}) ~ multimedia.vars.data.path }}">
                 <span class="botones der">
                     <a class="boton cuadrado blanco descartar" id="remove_primary_image_{{ loop.index }}" href="#">
                         <span class="icono icon icon-eliminar"></span>
@@ -99,7 +99,7 @@
             <label>Imagen en Texto {{ loop.index }}</label>
             <span class="caja-imagen">
                 <span class="tarjeta imagen">
-                    <img alt="" src="{{ currentSite.domain ~ multimedia.vars.data.path }}">
+                    <img alt="" src="{{ relative_images_path|replace({'{site_domain}': currentSite.slug}) ~ multimedia.vars.data.path }}">
                     <span class="botones der">
                         <a class="boton cuadrado blanco descartar" id="remove_text_image_{{ loop.index }}" href="#">
                             <span class="icono icon icon-eliminar"></span>

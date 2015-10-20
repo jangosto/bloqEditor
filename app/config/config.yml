@@ -49,6 +49,7 @@ twig:
     globals:
         statics_domain: %statics.server.domain%
         editorial_contents: *editorial_contents_config
+        relative_images_path: %multimedia.images.save.path%
 
 # Assetic Configuration
 assetic:
