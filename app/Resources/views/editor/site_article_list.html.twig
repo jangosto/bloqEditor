@@ -28,12 +28,14 @@
                     <th>Fecha</th>
                     <th class="ppal">Título</th>
                     <th></th>
+                    <th></th>
                 </tr>
                 {% for content in contents %}
                 <tr>
-                    <th>{{ content.createdDT|date("d/m/Y") }}</th>
-                    <th class="ppal">{{ content.title }}</th>
-                    <th><a class="boton cuadrado negro" href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}"><span class="icono icon icon-editar"></span></a></th>
+                    <td>{{ content.createdDT|date("d/m/Y") }}</td>
+                    <td class="ppal">{{ content.title }}</td>
+                    <td><a class="boton cuadrado negro" href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}"><span class="icono icon icon-editar"></span></a></td>
+                    <td><a class="boton cuadrado negro" href="{% if content.status == 'removed' %}{{ url('site_editor_editorial_content_restore', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}{% else %}{{ url('site_editor_editorial_content_remove', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}{% endif %}"><span class="icono icon icon-{% if content.status == 'removed' %}restaurar{% else %}eliminar{% endif %}"></span></a></td>
                 </tr>
                 {% endfor %}
             </tbody>
