@@ -36,13 +36,15 @@
                 <th>Slug</th>
                 <th>Padre</th>
                 <th>Editar</th>
+                <th></th>
             </tr>
             {% for category in categories %}
             <tr>
-                <th>{{ category.name }}</th>
-                <th>{{ category.slug }}</th>
-                <th>{% if category.parentId != null %}{{ categories[category.parentId].name }}{% endif %}</th>
-                <th><a class="boton cuadrado negro" href="{{ url('site_editor_category_edition', {'site': currentSite.slug, 'id': category.id}) }}"><span class="icono icon icon-editar"></span></a></th>
+                <td>{{ category.name }}</td>
+                <td>{{ category.slug }}</td>
+                <td>{% if category.parentId != null %}{{ categories[category.parentId].name }}{% endif %}</td>
+                <td><a class="boton cuadrado negro" href="{{ url('site_editor_category_edition', {'site': currentSite.slug, 'id': category.id}) }}"><span class="icono icon icon-editar"></span></a></td>
+                <td>{% if category.enabled %}<a href="{{ url('site_editor_category_disable', {'site': currentSite.slug, 'id': category.id}) }}"><button>Deshabilitar</button></a>{% else %}<a href="{{ url('site_editor_category_enable', {'site': currentSite.slug, 'id': category.id}) }}"><button>Habilitar</button></a>{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>

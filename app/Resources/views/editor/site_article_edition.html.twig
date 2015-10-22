@@ -147,12 +147,12 @@
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
-        <label for="" class="check">La funcionalidad de etiquetado y asignación de sección estará disponible próximamente. Gracias por su paciencia</label>
-{#        {{ form_label(form.category, "Sección") }}
-        {{ form_errors(form.category) }}
-        {{ form_widget(form.category) }}
+{#        <label for="" class="check">La funcionalidad de etiquetado y asignación de sección estará disponible próximamente. Gracias por su paciencia</label> #}
+        {{ form_label(form.categoryId, "Sección") }}
+        {{ form_errors(form.categoryId) }}
+        {{ form_widget(form.categoryId) }}
         <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar nombre de la sección como antetítulo</label>
-        {{ form_label(form.tags, "Etiquetas") }}
+{#        {{ form_label(form.tags, "Etiquetas") }}
         {{ form_errors(form.tags) }}
         {{ form_widget(form.tags) }}
 #}
