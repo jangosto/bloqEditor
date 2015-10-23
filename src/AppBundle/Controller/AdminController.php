@@ -66,7 +66,7 @@ class AdminController extends Controller
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
             "form" => $form->createView(),
-            "categories" => $categoriesArray,
+            "categories" => $categories,
         ));
     }
 
