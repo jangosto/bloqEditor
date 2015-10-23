@@ -1,0 +1,13 @@
+{% macro categories_table(site, elements, level = 0, baseMargin = 30, maxFontSize = 20, reductor = 4) %}
+    {% for element in elements %}
+        <tr>
+            <td style="padding-left: {{ level*baseMargin }}px; width: 40%; font-size: {{ maxFontSize-(reductor*level)+level }}px">{{ element.name }}</td>
+            <td>{{ element.slug }}</td>
+            <td><a class="boton cuadrado negro" href="{{ url('site_editor_category_edition', {'site': site.slug, 'id': element.id}) }}"><span class="icono icon icon-editar"></span></a></td>
+            <td>{% if element.enabled %}<a href="{{ url('site_editor_category_disable', {'site': site.slug, 'id': element.id}) }}"><button>Deshabilitar</button></a>{% else %}<a href="{{ url('site_editor_category_enable', {'site': site.slug, 'id': element.id}) }}"><button>Habilitar</button></a>{% endif %}</td>
+        </tr>
+        {% if element.children != null and element.children|length > 0 %}
+            {{ _self.categories_table(site, element.children, level+1, baseMargin, maxFontSize, reductor) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}

@@ -58,15 +58,48 @@ class AdminController extends Controller
             return $response;
         }
 
-        $categories = $categoryManager->getAll();
-        $categoriesArray = $this->orderObjects($categories);
+        $categories = $categoryManager->getAllWithHierarchy();
+//        $categories = $categoryManager->getAll();
+//        $categoriesArray = $this->orderObjects($categories);
 
         return $this->render('editor/site_category_edition.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
             "form" => $form->createView(),
-            "categories" => $categoriesArray,
+            "categories" => $categories,
         ));
+    }
+
+    /**
+     * @Route("/category/{id}/enable", name="site_editor_category_enable")
+     */
+    public function siteCategoryEnableAction(Request $request, $site, $id)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $categoryManager = $this->container->get('editor.category.manager');
+
+        $categoryManager->enableById($id);
+
+        $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        return $response;
+    }
+
+    /**
+     * @Route("/category/{id}/disable", name="site_editor_category_disable")
+     */
+    public function siteCategoryDisableAction(Request $request, $site, $id)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $categoryManager = $this->container->get('editor.category.manager');
+
+        $categoryManager->disableById($id);
+
+        $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        return $response;
     }
 
     /**
