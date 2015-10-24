@@ -58,7 +58,8 @@ class EditorController extends Controller
             'currentSite' => $siteObjects[0],
             'currentEditorialContent' => $editorialContentType,
             'contents' => $contents,
-            'numContents' => $numContents
+            'numContents' => $numContents,
+            'filter' => $filter
         ));
     }
 
