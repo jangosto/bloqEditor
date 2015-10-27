@@ -53,6 +53,8 @@ class EditorController extends Controller
             }
         }
 
+        $this->cleanupManager($editorialContentManager);
+
         return $this->render('editor/site_'.$editorialContentType.'_list.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
@@ -72,6 +74,7 @@ class EditorController extends Controller
         $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
 
         $editorialContentClass = $this->container->getParameter("editorial_contents.".$editorialContentType.".model_class");
+        $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
@@ -79,7 +82,6 @@ class EditorController extends Controller
                 $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
             }
         } else {
-            $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
             if (!$request->request->has('save') && !$request->request->has('publish')) {
                 $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
@@ -106,7 +108,7 @@ class EditorController extends Controller
             foreach ($editorialContent->getMultimedias() as $multimedia) {
                 $multimediaManager->save($multimedia);
             }*/
-            $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
+            ladybug_dump($editorialContent->getCategories()->first());
             $editorialContentManager->save($editorialContent);
 
             $route = "site_editor_editorial_content_edition";
@@ -117,9 +119,13 @@ class EditorController extends Controller
                     'id' => $editorialContent->getId()
                 ));
 
+            $this->cleanupManager($editorialContentManager);
+
             $response = new RedirectResponse($url);
             return $response;
         }
+
+        $this->cleanupManager($editorialContentManager);
 
         return $this->render('editor/site_'.$editorialContentType.'_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -145,6 +151,8 @@ class EditorController extends Controller
 
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
 
+        $this->cleanupManager($editorialContentManager);
+
         return $response;
     }
 
@@ -164,6 +172,8 @@ class EditorController extends Controller
         $editorialContentManager->save($editorialContent);
 
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        $this->cleanupManager($editorialContentManager);
 
         return $response;
     }
@@ -358,5 +368,10 @@ class EditorController extends Controller
         }
 
         return $object;
+    }
+
+    private function cleanupManager($manager)
+    {
+        $manager->cleanup();
     }
 }
