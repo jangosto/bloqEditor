@@ -89,10 +89,13 @@ doctrine:
                 driver:   pdo_mysql
                 host:     "%database_host%"
                 port:     "%database_port%"
-                dbname:   'empty_database'
-                password:  'empty_password'
+                dbname:   "%latidoalatido.content.database_name%"
+                user:     "%latidoalatido.content.database_user%"
+                password: "%latidoalatido.content.database_password%"
+#                dbname:   'empty_database'
+#                password:  'empty_password'
                 charset:  UTF8
-                wrapper_class: 'Bloq\Doctrine\MulticonnectBundle\Connection\ConnectionWrapper'
+#                wrapper_class: 'Bloq\Doctrine\MulticonnectBundle\Connection\ConnectionWrapper'
 
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml

@@ -108,7 +108,7 @@ class EditorController extends Controller
             foreach ($editorialContent->getMultimedias() as $multimedia) {
                 $multimediaManager->save($multimedia);
             }*/
-            ladybug_dump($editorialContent->getCategories()->first());
+            $this->container->get('editor.category.manager')->saveCollection($editorialContent->getCategories());
             $editorialContentManager->save($editorialContent);
 
             $route = "site_editor_editorial_content_edition";
@@ -317,11 +317,11 @@ class EditorController extends Controller
 
     private function setContentsDatabaseConfig($site)
     {
-        $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
+  /*      $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
                 $this->container->getParameter($site.'.content.database_name'),
                 $this->container->getParameter($site.'.content.database_user'),
                 $this->container->getParameter($site.'.content.database_password')
-            );
+            );*/
     }
 
     private function saveUploadedMultimedias($editorialObject, $siteObject)
@@ -372,6 +372,6 @@ class EditorController extends Controller
 
     private function cleanupManager($manager)
     {
-        $manager->cleanup();
+//        $manager->cleanup();
     }
 }
