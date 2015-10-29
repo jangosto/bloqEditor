@@ -18,12 +18,13 @@
     <!--[if lt IE 9]>
         <script src="{{ statics_domain }}/js/html5.js"></script>
     <![endif]-->
-    <script src="{{ statics_domain }}/js/jquery-1.11.1.min.js"></script>
+{#    <script src="{{ statics_domain }}/js/jquery-1.11.1.min.js"></script>#}
 {% endblock %}
 
 {% block bodyAttributes %}name="{% block bodyName %}top{% endblock %}" class="{% block bodyClass %}bg-gris-50{% endblock %}" id="{% block bodyId %}{% endblock %}"{% endblock %}
 
 {% block header %}
+    {% include "ComurImageBundle:Form:croppable_image_modal.html.twig" with {'include_jquery': true, 'include_bootstrap': false} %}
     <header class="bg-gris-100 clear">
         <span class="titulo tam24 rojo-500"><strong>fanatic</strong>.futbol{% if currentSite is defined %}<small class="gris-500"> > <strong>{{ currentSite.name }}</strong></small>{% endif %}{% block breadcrumb %}{% endblock %}</span>
 {#        <img src="{{ statics_domain }}/img/angel-grande.jpg" alt="Ángel Ruiz Jiménez" class="avatar"> #}

@@ -53,9 +53,9 @@
         <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
         {% for multimedia in primaryImages %}
         {% set formHtml =
-            form_label(multimedia.file, "O sube una imagen")
-            ~ form_errors(multimedia.file)
-            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
+            form_label(multimedia.image, "O sube una imagen")
+            ~ form_errors(multimedia.image)
+            ~ form_widget(multimedia.image, { 'attr':{ 'tabindex': '-1' } })
         %}
         <div id="primary_image_form_{{ loop.index }}">
         {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
@@ -75,24 +75,24 @@
             {{ formHtml|raw }}
         {% endif %}
         </div>
-        <script>
+        {#<script>
             jQuery("#remove_primary_image_{{ loop.index }}").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
                     jQuery("#primary_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
-                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                    $("#{{ multimedia.image.vars.id }}").jfilestyle({
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
             });
-        </script>
+        </script>#}
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
         {% for multimedia in textImages %}
         {% set formHtml = 
-            form_label(multimedia.file, "Subir la imagen en texto "~loop.index)
-            ~ form_errors(multimedia.file)
-            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
+            form_label(multimedia.image, "Subir la imagen en texto "~loop.index)
+            ~ form_errors(multimedia.image)
+            ~ form_widget(multimedia.image, { 'attr':{ 'tabindex': '-1' } })
         %}
         <div id="text_image_form_{{ loop.index }}">
         {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
@@ -112,16 +112,16 @@
             {{ formHtml|raw }}
         {% endif %}
         </div>
-        <script>
+        {#<script>
             jQuery("#remove_text_image_{{ loop.index }}").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
                     jQuery("#text_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
-                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                    $("#{{ multimedia.image.vars.id }}").jfilestyle({
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
             });
-        </script>
+        </script>#}
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
@@ -165,6 +165,10 @@
     </span>
     {{ form_widget(form._token) }}
 </form>
-
 {% endblock %}
 
+{% block bodyJs %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock %}

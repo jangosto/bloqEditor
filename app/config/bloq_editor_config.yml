@@ -11,5 +11,10 @@ bloq_editor:
 #            form_type_class: ~
 #            form_type_name: ~
 
+bloq_multimedia:
+    images:
+        root_dir_path: %editor.domain.path%%multimedia.images.save.path%
+        root_dir_url: %multimedia.images.dir.rel_url%
+
 parameters:
     article.model_class: *articleModelClass
