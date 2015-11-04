@@ -76,53 +76,61 @@ class EditorController extends Controller
         $editorialContentClass = $this->container->getParameter("editorial_contents.".$editorialContentType.".model_class");
         $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
 
+        $contentsCategoriesManager = $this->container->get('editor.contents_categories.manager');
+
+        $form = $this->container->get('editor.'.$editorialContentType.'.form');
+
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
-            if (!$request->request->has('save') && !$request->request->has('publish')) {
-                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
-            }
         } else {
             $editorialContent = $editorialContentManager->getById($id);
-            if (!$request->request->has('save') && !$request->request->has('publish')) {
-                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
-            }
+            $editorialContent->setCategoryIds($contentsCategoriesManager->getcategoryIds($editorialContent->getId()));
         }
 
-        $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent);
+        if (!$request->request->has('save') && !$request->request->has('publish')) {
+            $this->setEdidtorialContentForForm($editorialContent);
+        }
         
-        $form->handleRequest($request);
+        $form->setData($editorialContent);
 
-        if ($form->isValid()) {
-            $editorialContent = $form->getData();
-            if ($form->get('publish')->isClicked()) {
-                $editorialContent->setStatus("published");
-            } elseif($form->get('save')->isClicked()) {
-                $editorialContent->setStatus("saved");
-            }
+        if ('POST' === $request->getMethod()) {
+            $form->handleRequest($request);
+            
+            if ($form->isValid()) {
+               // dump($editorialContent);
+               $editorialContent = $form->getData();
+            // dump($editorialContent);die;
+                if ($form->get('publish')->isClicked()) {
+                    $editorialContent->setStatus("published");
+                } elseif($form->get('save')->isClicked()) {
+                    $editorialContent->setStatus("saved");
+                }
 
-            $editorialContent = $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
-            $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
-            $editorialContent = $this->setEditorialContentAuthors($editorialContent);
-            $editorialContent = $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
-            /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
-            foreach ($editorialContent->getMultimedias() as $multimedia) {
-                $multimediaManager->save($multimedia);
-            }*/
-            $this->container->get('editor.category.manager')->saveCollection($editorialContent->getCategories());
-            $editorialContentManager->save($editorialContent);
+                $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
+                $this->cleanEditorialContentToPersist($editorialContent);
+                $this->setEditorialContentAuthors($editorialContent);
+                $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
+                /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
+                foreach ($editorialContent->getMultimedias() as $multimedia) {
+                    $multimediaManager->save($multimedia);
+                }*/
+                $editorialContentManager->saveEditorialContent($editorialContent);
 
-            $route = "site_editor_editorial_content_edition";
+                $contentsCategoriesManager->saveRelationships($editorialContent);
 
-            $url = $this->container->get('router')->generate($route, array(
+                $route = "site_editor_editorial_content_edition";
+
+                $url = $this->container->get('router')->generate($route, array(
                     'site' => $site,
                     'editorialContentType' => $editorialContentType,
                     'id' => $editorialContent->getId()
                 ));
 
-            $this->cleanupManager($editorialContentManager);
+                $this->cleanupManager($editorialContentManager);
 
-            $response = new RedirectResponse($url);
-            return $response;
+                $response = new RedirectResponse($url);
+                return $response;
+            }
         }
 
         $this->cleanupManager($editorialContentManager);

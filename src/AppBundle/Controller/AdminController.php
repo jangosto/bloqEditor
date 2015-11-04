@@ -200,10 +200,10 @@ class AdminController extends Controller
 
     private function setContentsDatabaseConfig($site)
     {
-        $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
+/*        $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
                 $this->container->getParameter($site.'.content.database_name'),
                 $this->container->getParameter($site.'.content.database_user'),
                 $this->container->getParameter($site.'.content.database_password')
-            );
+            );*/
     }
 }

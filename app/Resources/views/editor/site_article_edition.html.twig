@@ -147,13 +147,28 @@
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
-{#        <label for="" class="check">La funcionalidad de etiquetado y asignación de sección estará disponible próximamente. Gracias por su paciencia</label> #}
         {{ form_label(form.sectionId, "Sección") }}
         {{ form_errors(form.sectionId) }}
         {{ form_widget(form.sectionId) }}
         <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar nombre de la sección como antetítulo</label>
-        <label for="" class="check">Categorización</label>
-        {{ form_widget(form.categories) }}
+
+        <label for="etiquetas">Guardado en:</label>
+        <span class="guardado-en">
+            <span class="cat">
+                {% for option in form.categoryIds %}
+                <label for="" class="check">{{ form_widget(option) }}{{ option.vars.label }}</label>
+                {% endfor %}
+            </span>
+            <span class="tag">
+                <label for="" class="check"><input type="checkbox">Cristiano Ronaldo</label>
+                <label for="" class="check"><input type="checkbox">Frente Atlético</label>
+                <label for="" class="check"><input type="checkbox">Otra por probar</label>
+                <label for="" class="check"><input type="checkbox">Y otra más</label>
+                <label for="" class="check"><input type="checkbox">Y venga</label>
+                <label for="" class="check"><input type="checkbox">Pero no me aburras</label>
+            </span>
+        </span>
+
 {#        {{ form_label(form.tags, "Etiquetas") }}
         {{ form_errors(form.tags) }}
         {{ form_widget(form.tags) }}
