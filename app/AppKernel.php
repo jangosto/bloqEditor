@@ -23,7 +23,7 @@ class AppKernel extends Kernel
 
             new Bloq\Common\EntitiesBundle\BloqEntitiesBundle(),
             new Bloq\Common\EditorBundle\BloqEditorBundle(),
-            new Bloq\Doctrine\MulticonnectBundle\BloqMulticonnectBundle(),
+//            new Bloq\Doctrine\MulticonnectBundle\BloqMulticonnectBundle(),
             new Bloq\Common\MultimediaBundle\BloqMultimediaBundle(),
         );
 

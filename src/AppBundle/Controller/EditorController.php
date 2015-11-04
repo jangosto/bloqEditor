@@ -53,6 +53,8 @@ class EditorController extends Controller
             }
         }
 
+        $this->cleanupManager($editorialContentManager);
+
         return $this->render('editor/site_'.$editorialContentType.'_list.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
@@ -72,54 +74,66 @@ class EditorController extends Controller
         $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
 
         $editorialContentClass = $this->container->getParameter("editorial_contents.".$editorialContentType.".model_class");
+        $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
+
+        $contentsCategoriesManager = $this->container->get('editor.contents_categories.manager');
+
+        $form = $this->container->get('editor.'.$editorialContentType.'.form');
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
-            if (!$request->request->has('save') && !$request->request->has('publish')) {
-                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
-            }
         } else {
-            $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
             $editorialContent = $editorialContentManager->getById($id);
-            if (!$request->request->has('save') && !$request->request->has('publish')) {
-                $editorialContent = $this->setEdidtorialContentForForm($editorialContent);
-            }
+            $editorialContent->setCategoryIds($contentsCategoriesManager->getcategoryIds($editorialContent->getId()));
         }
 
-        $form = $this->createForm('editor_'.$editorialContentType.'_edition', $editorialContent);
+        if (!$request->request->has('save') && !$request->request->has('publish')) {
+            $this->setEdidtorialContentForForm($editorialContent);
+        }
         
-        $form->handleRequest($request);
+        $form->setData($editorialContent);
 
-        if ($form->isValid()) {
-            $editorialContent = $form->getData();
-            if ($form->get('publish')->isClicked()) {
-                $editorialContent->setStatus("published");
-            } elseif($form->get('save')->isClicked()) {
-                $editorialContent->setStatus("saved");
-            }
+        if ('POST' === $request->getMethod()) {
+            $form->handleRequest($request);
+            
+            if ($form->isValid()) {
+               // dump($editorialContent);
+               $editorialContent = $form->getData();
+            // dump($editorialContent);die;
+                if ($form->get('publish')->isClicked()) {
+                    $editorialContent->setStatus("published");
+                } elseif($form->get('save')->isClicked()) {
+                    $editorialContent->setStatus("saved");
+                }
 
-            $editorialContent = $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
-            $editorialContent = $this->cleanEditorialContentToPersist($editorialContent);
-            $editorialContent = $this->setEditorialContentAuthors($editorialContent);
-            $editorialContent = $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
-            /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
-            foreach ($editorialContent->getMultimedias() as $multimedia) {
-                $multimediaManager->save($multimedia);
-            }*/
-            $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
-            $editorialContentManager->save($editorialContent);
+                $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
+                $this->cleanEditorialContentToPersist($editorialContent);
+                $this->setEditorialContentAuthors($editorialContent);
+                $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
+                /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
+                foreach ($editorialContent->getMultimedias() as $multimedia) {
+                    $multimediaManager->save($multimedia);
+                }*/
+                $editorialContentManager->saveEditorialContent($editorialContent);
 
-            $route = "site_editor_editorial_content_edition";
+                $contentsCategoriesManager->saveRelationships($editorialContent);
 
-            $url = $this->container->get('router')->generate($route, array(
+                $route = "site_editor_editorial_content_edition";
+
+                $url = $this->container->get('router')->generate($route, array(
                     'site' => $site,
                     'editorialContentType' => $editorialContentType,
                     'id' => $editorialContent->getId()
                 ));
 
-            $response = new RedirectResponse($url);
-            return $response;
+                $this->cleanupManager($editorialContentManager);
+
+                $response = new RedirectResponse($url);
+                return $response;
+            }
         }
+
+        $this->cleanupManager($editorialContentManager);
 
         return $this->render('editor/site_'.$editorialContentType.'_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -145,6 +159,8 @@ class EditorController extends Controller
 
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
 
+        $this->cleanupManager($editorialContentManager);
+
         return $response;
     }
 
@@ -164,6 +180,8 @@ class EditorController extends Controller
         $editorialContentManager->save($editorialContent);
 
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        $this->cleanupManager($editorialContentManager);
 
         return $response;
     }
@@ -307,11 +325,11 @@ class EditorController extends Controller
 
     private function setContentsDatabaseConfig($site)
     {
-        $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
+  /*      $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
                 $this->container->getParameter($site.'.content.database_name'),
                 $this->container->getParameter($site.'.content.database_user'),
                 $this->container->getParameter($site.'.content.database_password')
-            );
+            );*/
     }
 
     private function saveUploadedMultimedias($editorialObject, $siteObject)
@@ -358,5 +376,10 @@ class EditorController extends Controller
         }
 
         return $object;
+    }
+
+    private function cleanupManager($manager)
+    {
+//        $manager->cleanup();
     }
 }
