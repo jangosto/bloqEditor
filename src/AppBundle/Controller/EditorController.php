@@ -77,6 +77,7 @@ class EditorController extends Controller
         $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
 
         $contentsCategoriesManager = $this->container->get('editor.contents_categories.manager');
+        $contentsTagsManager = $this->container->get('editor.contents_tags.manager');
 
         $form = $this->container->get('editor.'.$editorialContentType.'.form');
 
@@ -84,7 +85,8 @@ class EditorController extends Controller
             $editorialContent = new $editorialContentClass();
         } else {
             $editorialContent = $editorialContentManager->getById($id);
-            $editorialContent->setCategoryIds($contentsCategoriesManager->getcategoryIds($editorialContent->getId()));
+//            $editorialContent->setCategoryIds($contentsCategoriesManager->getCategoryIds($editorialContent->getId()));
+//            $editorialContent->setTagIds($contentsTagsManager->getTagIds($editorialContent->getId()));
         }
 
         if (!$request->request->has('save') && !$request->request->has('publish')) {
@@ -92,7 +94,7 @@ class EditorController extends Controller
         }
         
         $form->setData($editorialContent);
-
+        
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
             
@@ -117,6 +119,7 @@ class EditorController extends Controller
                 $editorialContentManager->saveEditorialContent($editorialContent);
 
                 $contentsCategoriesManager->saveRelationships($editorialContent);
+                $contentsTagsManager->saveRelationships($editorialContent);
 
                 $route = "site_editor_editorial_content_edition";
 
@@ -325,11 +328,11 @@ class EditorController extends Controller
 
     private function setContentsDatabaseConfig($site)
     {
-  /*      $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
+        $this->get('doctrine.dbal.dynamic_connection')->forceSwitch(
                 $this->container->getParameter($site.'.content.database_name'),
                 $this->container->getParameter($site.'.content.database_user'),
                 $this->container->getParameter($site.'.content.database_password')
-            );*/
+            );
     }
 
     private function saveUploadedMultimedias($editorialObject, $siteObject)

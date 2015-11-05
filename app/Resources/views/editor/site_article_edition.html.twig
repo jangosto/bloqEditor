@@ -160,19 +160,12 @@
                 {% endfor %}
             </span>
             <span class="tag">
-                <label for="" class="check"><input type="checkbox">Cristiano Ronaldo</label>
-                <label for="" class="check"><input type="checkbox">Frente Atlético</label>
-                <label for="" class="check"><input type="checkbox">Otra por probar</label>
-                <label for="" class="check"><input type="checkbox">Y otra más</label>
-                <label for="" class="check"><input type="checkbox">Y venga</label>
-                <label for="" class="check"><input type="checkbox">Pero no me aburras</label>
+                {% for option in form.tagIds %}
+                <label for="" class="check">{{ form_widget(option) }}{{ option.vars.label }}</label>
+                {% endfor %}
             </span>
         </span>
 
-{#        {{ form_label(form.tags, "Etiquetas") }}
-        {{ form_errors(form.tags) }}
-        {{ form_widget(form.tags) }}
-#}
         <span class="botones">
             {{ form_widget(form.publish, { 'label': "Publicar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
             {{ form_widget(form.save, { 'label': "Guardar Borrador", 'attr': { 'type': 'submit', class: 'boton negro' } }) }}
