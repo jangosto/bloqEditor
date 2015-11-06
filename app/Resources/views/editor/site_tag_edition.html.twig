@@ -36,17 +36,10 @@
             <tr>
                 <th>Nombre</th>
                 <th>Slug</th>
-                <th>Padre</th>
                 <th>Editar</th>
+                <th></th>
             </tr>
-            {% for tag in tags %}
-            <tr>
-                <th>{{ tag.name }}</th>
-                <th>{{ tag.slug }}</th>
-                <th>{% if tag.parentId != null %}{{ tags[tag.parentId].name }}{% endif %}</th>
-                <th><a class="boton cuadrado negro" href="{{ url('site_editor_tag_edition', {'site': currentSite.slug, 'id': tag.id}) }}"><span class="icono icon icon-editar"></span></a></th>
-            </tr>
-            {% endfor %}
+            {{ listsMacros.tags_table(currentSite, tags) }}
         </tbody>
     </table>
 </span>

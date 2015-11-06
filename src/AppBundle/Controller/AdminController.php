@@ -59,8 +59,6 @@ class AdminController extends Controller
         }
 
         $categories = $categoryManager->getAllWithHierarchy();
-//        $categories = $categoryManager->getAll();
-//        $categoriesArray = $this->orderObjects($categories);
 
         return $this->render('editor/site_category_edition.html.twig', array(
             'user' => $this->getUser(),
@@ -138,15 +136,46 @@ class AdminController extends Controller
             return $response;
         }
 
-        $tags = $tagManager->getAll();
-        $tagsArray = $this->orderObjects($tags);
+        $tags = $tagManager->getAllWithHierarchy();
 
         return $this->render('editor/site_tag_edition.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
             "form" => $form->createView(),
-            "tags" => $tagsArray,
+            "tags" => $tags,
         ));
+    }
+
+    /**
+     * @Route("/tag/{id}/enable", name="site_editor_tag_enable")
+     */
+    public function siteTagEnableAction(Request $request, $site, $id)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $tagManager = $this->container->get('editor.tag.manager');
+
+        $tagManager->enableById($id);
+
+        $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        return $response;
+    }
+
+    /**
+     * @Route("/tag/{id}/disable", name="site_editor_tag_disable")
+     */
+    public function siteTagDisableAction(Request $request, $site, $id)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $tagManager = $this->container->get('editor.tag.manager');
+
+        $tagManager->disableById($id);
+
+        $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
+
+        return $response;
     }
 
     private function orderObjects($objects)

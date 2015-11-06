@@ -147,15 +147,25 @@
     </span>
     <span class="col-3 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
-{#        <label for="" class="check">La funcionalidad de etiquetado y asignación de sección estará disponible próximamente. Gracias por su paciencia</label> #}
-        {{ form_label(form.categoryId, "Sección") }}
-        {{ form_errors(form.categoryId) }}
-        {{ form_widget(form.categoryId) }}
+        {{ form_label(form.sectionId, "Sección") }}
+        {{ form_errors(form.sectionId) }}
+        {{ form_widget(form.sectionId) }}
         <label for="" class="check">{{ form_widget(form.useCategoryAsPretitle) }}Usar nombre de la sección como antetítulo</label>
-{#        {{ form_label(form.tags, "Etiquetas") }}
-        {{ form_errors(form.tags) }}
-        {{ form_widget(form.tags) }}
-#}
+
+        <label for="etiquetas">Guardado en:</label>
+        <span class="guardado-en">
+            <span class="cat" id="categories_selection">
+                {% for option in form.categoryIds %}
+                <label for="" class="check">{{ form_widget(option) }}{{ option.vars.label }}</label>
+                {% endfor %}
+            </span>
+            <span class="tag">
+                {% for option in form.tagIds %}
+                <label for="" class="check">{{ form_widget(option) }}{{ option.vars.label }}</label>
+                {% endfor %}
+            </span>
+        </span>
+
         <span class="botones">
             {{ form_widget(form.publish, { 'label': "Publicar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
             {{ form_widget(form.save, { 'label': "Guardar Borrador", 'attr': { 'type': 'submit', class: 'boton negro' } }) }}
