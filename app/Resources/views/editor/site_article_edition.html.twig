@@ -154,7 +154,7 @@
 
         <label for="etiquetas">Guardado en:</label>
         <span class="guardado-en">
-            <span class="cat">
+            <span class="cat" id="categories_selection">
                 {% for option in form.categoryIds %}
                 <label for="" class="check">{{ form_widget(option) }}{{ option.vars.label }}</label>
                 {% endfor %}

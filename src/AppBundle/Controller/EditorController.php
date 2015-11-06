@@ -79,12 +79,14 @@ class EditorController extends Controller
         $contentsCategoriesManager = $this->container->get('editor.contents_categories.manager');
         $contentsTagsManager = $this->container->get('editor.contents_tags.manager');
 
-        $form = $this->container->get('editor.'.$editorialContentType.'.form');
+        $formType = $this->container->get('editor.'.$editorialContentType.'.form.type');
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
         } else {
             $editorialContent = $editorialContentManager->getById($id);
+            $formType->setAssignedCategories($contentsCategoriesManager->getCategoryIds($editorialContent->getId()));
+            $formType->setAssignedTags($contentsTagsManager->getTagIds($editorialContent->getId()));
 //            $editorialContent->setCategoryIds($contentsCategoriesManager->getCategoryIds($editorialContent->getId()));
 //            $editorialContent->setTagIds($contentsTagsManager->getTagIds($editorialContent->getId()));
         }
@@ -92,8 +94,9 @@ class EditorController extends Controller
         if (!$request->request->has('save') && !$request->request->has('publish')) {
             $this->setEdidtorialContentForForm($editorialContent);
         }
-        
-        $form->setData($editorialContent);
+
+        $form = $this->createForm($formType, $editorialContent);
+       // $form->setData($editorialContent);
         
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
