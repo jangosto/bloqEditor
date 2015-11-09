@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use Bloq\Common\EntitiesBundle\Entity\User as AdminUser;
 use Bloq\Common\MultimediaBundle\Entity\Multimedia as MultimediaEntity;
+use Bloq\Common\MultimediaBundle\Lib\Globals;
 
 use AppBundle\Form\Type\UserCreationFormType as AdminUserCreationFormType;
 
@@ -28,7 +29,7 @@ class AdminController extends Controller
     public function siteCategoryEditionAction(Request $request, $site, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
         $categoryManager = $this->container->get('editor.category.manager');
 
         if ($id == "new") {
@@ -74,7 +75,7 @@ class AdminController extends Controller
     public function siteCategoryEnableAction(Request $request, $site, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
         $categoryManager = $this->container->get('editor.category.manager');
 
         $categoryManager->enableById($id);
@@ -90,7 +91,7 @@ class AdminController extends Controller
     public function siteCategoryDisableAction(Request $request, $site, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
         $categoryManager = $this->container->get('editor.category.manager');
 
         $categoryManager->disableById($id);
@@ -106,7 +107,7 @@ class AdminController extends Controller
     public function siteTagEditionAction(Request $request, $site, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
         $tagManager = $this->container->get('editor.tag.manager');
 
         if ($id == "new") {
@@ -152,7 +153,7 @@ class AdminController extends Controller
     public function siteTagEnableAction(Request $request, $site, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
         $tagManager = $this->container->get('editor.tag.manager');
 
         $tagManager->enableById($id);
@@ -168,7 +169,7 @@ class AdminController extends Controller
     public function siteTagDisableAction(Request $request, $site, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
         $tagManager = $this->container->get('editor.tag.manager');
 
         $tagManager->disableById($id);
@@ -176,6 +177,12 @@ class AdminController extends Controller
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
 
         return $response;
+    }
+
+    private function setSiteConfig($siteObject)
+    {
+        $this->setContentsDatabaseConfig($siteObject->getSlug());
+        Globals::setImagesUploadDir(str_replace("{site_domain}", $siteObject->getSlug(), Globals::getImagesUploadDir()));
     }
 
     private function orderObjects($objects)

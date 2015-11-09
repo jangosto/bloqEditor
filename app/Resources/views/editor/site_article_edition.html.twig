@@ -1,6 +1,14 @@
 {% extends "editor/layout.html.twig" %}
 
+{% block javascript %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock %}
+
 {% block bodyId %}articulos{% endblock %}
+
+{% block bodyIncludes %}{% include "ComurImageBundle:Form:croppable_image_modal.html.twig" with {'include_jquery': false, 'include_bootstrap': false} %}{% endblock %}
 
 {% block siteActionHeader %}
 <span class="col-12 pad">
@@ -177,8 +185,8 @@
 </form>
 {% endblock %}
 
-{% block bodyJs %}
+{# block bodyJs %}
     {{ parent() }}
     <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-{% endblock %}
+{% endblock #}

@@ -12,9 +12,12 @@ bloq_editor:
 #            form_type_name: ~
 
 bloq_multimedia:
+    domain_path: %editor.domain.path%
+    upload_dir: %multimedia.upload.dir.rel.path%
     images:
-        root_dir_path: %editor.domain.path%%multimedia.images.save.path%
-        root_dir_url: %multimedia.images.dir.rel_url%
+        root_dir_rel_path: &imagesRootDir %multimedia.upload.dir.rel.path%/images
+        root_dir_rel_url: %multimedia.images.dir.rel_url%
 
 parameters:
-    article.model_class: *articleModelClass
+    bloq_editor.editorial_content.article.model_class: *articleModelClass
+    bloq_multimedia.images.root_dir_rel_path: *imagesRootDir 
