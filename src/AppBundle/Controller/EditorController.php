@@ -162,7 +162,7 @@ class EditorController extends Controller
         $editorialContent = $editorialContentManager->getById($id);
         $editorialContent->setStatus('removed');
 
-        $editorialContentManager->save($editorialContent);
+        $editorialContentManager->saveEditorialContent($editorialContent);
 
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
 
@@ -184,7 +184,7 @@ class EditorController extends Controller
         $editorialContent = $editorialContentManager->getById($id);
         $editorialContent->setStatus('saved');
 
-        $editorialContentManager->save($editorialContent);
+        $editorialContentManager->saveEditorialContent($editorialContent);
 
         $response = new RedirectResponse($this->getRequest()->headers->get('referer'));
 
