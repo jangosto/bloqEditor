@@ -12,6 +12,7 @@ parameters:
         article:
             pretty_name: Artículo
             menu_class: articulos
+            image_filters_enabled: ['article_primary', 'article_intext']
 #        gallery:
 #            pretty_name: Galería
 #            menu_class: galerias
@@ -49,7 +50,7 @@ twig:
     globals:
         statics_domain: %statics.server.domain%
         editorial_contents: *editorial_contents_config
-        relative_images_path: %multimedia.images.save.path%
+        relative_images_path: %bloq_multimedia.images.root_dir_rel_path%
 
 # Assetic Configuration
 assetic:
@@ -130,7 +131,7 @@ doctrine:
 
         auto_generate_proxy_classes: "%kernel.debug%"
         resolve_target_entities:
-            Bloq\Common\EditorBundle\Entity\EditorialContentInterface: %article.model_class%
+            Bloq\Common\EditorBundle\Entity\EditorialContentInterface: %bloq_editor.editorial_content.article.model_class%
         #naming_strategy: doctrine.orm.naming_strategy.underscore
         #auto_mapping: true
 
@@ -188,3 +189,21 @@ stfalcon_tinymce:
         #    plugins: ["bbcode, code, link, preview"]
         #    menubar: false
         #    toolbar1: "bold,italic,underline,undo,redo,link,unlink,removeformat,cleanup,code,preview"
+
+liip_imagine:
+    resolvers:
+        default:
+            web_path:
+                web_root: %editor.domain.path%
+                cache_prefix: %multimedia.cache_dir.prefix%
+
+    filter_sets:
+        article_primary:
+            quality: 75
+            filters:
+                relative_resize: { widen: 940 }
+        article_intext:
+            quality: 75
+            filters:
+                relative_resize: { widen: 660 }
+

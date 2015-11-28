@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use Bloq\Common\EntitiesBundle\Entity\User as AdminUser;
 use Bloq\Common\MultimediaBundle\Entity\Multimedia as MultimediaEntity;
+use Bloq\Common\MultimediaBundle\Lib\Globals;
 
 use AppBundle\Form\Type\UserCreationFormType as AdminUserCreationFormType;
 
@@ -25,7 +26,7 @@ class EditorController extends Controller
     public function siteDashboardAction(Request $request, $site)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
 
         return $this->render('editor/site_dashboard.html.twig', array(
             'user' => $this->getUser(),
@@ -40,8 +41,8 @@ class EditorController extends Controller
     {
         $status = array("published", "removed", "saved");
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
-        
+        $this->setSiteConfig($siteObjects[0]);
+
         $contents = array();
         $numContents = array();
         $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
@@ -71,7 +72,7 @@ class EditorController extends Controller
     public function siteEditorialContentEditionAction(Request $request, $site, $editorialContentType, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
 
         $editorialContentClass = $this->container->getParameter("editorial_contents.".$editorialContentType.".model_class");
         $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
@@ -111,7 +112,7 @@ class EditorController extends Controller
                     $editorialContent->setStatus("saved");
                 }
 
-                $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
+                $this->saveUploadedMultimedias($editorialContent, $editorialContentType, $siteObjects[0]);
                 $this->cleanEditorialContentToPersist($editorialContent);
                 $this->setEditorialContentAuthors($editorialContent);
                 $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
@@ -154,7 +155,7 @@ class EditorController extends Controller
     public function siteEditorialContentRemoveAction(Request $request, $site, $editorialContentType, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
 
         $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
 
@@ -176,7 +177,7 @@ class EditorController extends Controller
     public function siteEditorialContentRestoreAction(Request $request, $site, $editorialContentType, $id)
     {
         $siteObjects = $this->getCurrentSiteBySlug($site);
-        $this->setContentsDatabaseConfig($siteObjects[0]->getSlug());
+        $this->setSiteConfig($siteObjects[0]);
 
         $editorialContentManager = $this->container->get('editor.'.$editorialContentType.'.manager');
 
@@ -190,6 +191,13 @@ class EditorController extends Controller
         $this->cleanupManager($editorialContentManager);
 
         return $response;
+    }
+
+    private function setSiteConfig($siteObject)
+    {
+        $this->setContentsDatabaseConfig($siteObject->getSlug());
+        Globals::setImagesUploadDir(str_replace("{site_domain}", $siteObject->getSlug(), $this->container->getParameter('bloq_multimedia.images.root_dir_rel_path')));
+        Globals::setOriginalImagesUploadDir(str_replace("{site_domain}", $siteObject->getSlug(), $this->container->getParameter('bloq_multimedia.images.root_dir_rel_path_originals')));
     }
 
     private function getRolesForUser()
@@ -338,26 +346,18 @@ class EditorController extends Controller
             );
     }
 
-    private function saveUploadedMultimedias($editorialObject, $siteObject)
+    private function saveUploadedMultimedias($editorialObject, $editorialContentType, $siteObject)
     {
-        foreach ($editorialObject->getMultimedias() as $key => $multimedia) {
-            if ($multimedia->getType() == "image" && $multimedia->getFile() !== null) {
-                $uploadPath = $this->container->getParameter('multimedia.images.save.path');
-                $domainPath = $this->container->getParameter('editor.domain.path');
-                $relImagesDirUrl = $this->container->getParameter('multimedia.images.dir.rel_url');
-
-                $extension = $multimedia->getFile()->guessExtension();
-                $dateDirPart = date("Y/md");
-                $relDirPath = str_replace("{site_domain}", $siteObject->getSlug(), $uploadPath)."/".$dateDirPart."/";
-                $relDirUrl = $relImagesDirUrl."/".$dateDirPart."/";
-                $absDir = $domainPath.$relDirPath;
-                $filename = rand(1, 9999999).'.'.$extension;
-                $multimedia->getFile()->move($absDir, $filename);
-                $editorialObject->getMultimedias()[$key]->setPath("/".$dateDirPart."/".$filename);
+        $config = $this->container->getParameter('editorial_contents');
+        $multimediaManager = $this->container->get("multimedia.multimedia.manager");
+        $imageCropper = $this->container->get('multimedia.images.image_cropper');
+        foreach ($editorialObject->getMultimedias() as $multimedia) {
+            if ($multimedia->getFile() !== null) {
+                $multimediaManager->saveMultimediaItem($multimedia);
+                $imageCropper->setImage($multimedia);
+                $imageCropper->generateImageCrops($config[$editorialContentType]['image_filters_enabled']);
             }
         }
-        
-        return $editorialObject;
     }
 
     private function setEditorialContentAuthors($object)

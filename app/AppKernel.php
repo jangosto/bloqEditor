@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             
             new FOS\UserBundle\FOSUserBundle(),
             new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
+            new Liip\ImagineBundle\LiipImagineBundle(),
 
             new Bloq\Common\EntitiesBundle\BloqEntitiesBundle(),
             new Bloq\Common\EditorBundle\BloqEditorBundle(),

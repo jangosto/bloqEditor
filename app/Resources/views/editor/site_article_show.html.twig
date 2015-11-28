@@ -1,0 +1,19 @@
+{% extends "editor/layout.html.twig" %}
+
+{% block bodyId %}articulos{% endblock %}
+
+{% block siteActionHeader %}
+<span class="col-12 pad">
+    <h1 class="titulo cuerpo tam38 rojo-500">Edición de Artículo</h1>
+</span>
+{% endblock %}
+
+{% block siteActionContent %}
+<img src="{{ (content.multimedias.0.getImagesUploadDir() ~ content.multimedias.0.path)|imagine_filter('article') }}" />
+{% endblock %}
+
+{# block bodyJs %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+{% endblock #}

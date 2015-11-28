@@ -10,7 +10,7 @@
 {% for site in user.sites %}
 	<span class="col-4 pad">
         <section class="tarjeta pad">
-            <h1 class="titulo cuerpo tam18"><a href="panel-control.html"><strong>{{ site.name }}</strong></a></h1>
+            <h1 class="titulo cuerpo tam18"><a href="{{ url('site_editor_dashboard', {'site': site.slug}) }}"><strong>{{ site.name }}</strong></a></h1>
             <span class="botones">
                 <a href="{{ url('site_editor_dashboard', {'site': site.slug}) }}" class="boton azul"><span class="icono icon icon-flecha-der"></span><span class="accion">Entrar</span></a>
             </span>
