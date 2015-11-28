@@ -12,6 +12,7 @@ parameters:
         article:
             pretty_name: Artículo
             menu_class: articulos
+            image_filters_enabled: ['article_primary', 'article_intext']
 #        gallery:
 #            pretty_name: Galería
 #            menu_class: galerias
@@ -189,12 +190,20 @@ stfalcon_tinymce:
         #    menubar: false
         #    toolbar1: "bold,italic,underline,undo,redo,link,unlink,removeformat,cleanup,code,preview"
 
-comur_image:
-    config:
-        cropped_image_dir: 'cropped'
-        thumbs_dir: 'thumbnails'
-        media_lib_thumb_size: 150
-        web_dirname: 'web'
-        translation_domain: 'ComurImageBundle'
-        gallery_thumb_size: 150
-        gallery_dir: 'gallery'
+liip_imagine:
+    resolvers:
+        default:
+            web_path:
+                web_root: %editor.domain.path%
+                cache_prefix: %multimedia.cache_dir.prefix%
+
+    filter_sets:
+        article_primary:
+            quality: 75
+            filters:
+                relative_resize: { widen: 940 }
+        article_intext:
+            quality: 75
+            filters:
+                relative_resize: { widen: 660 }
+

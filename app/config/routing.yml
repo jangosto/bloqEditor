@@ -21,13 +21,8 @@ fos_user_change_password:
 #    path:      /users/create/
 #    defaults:  { _controller: FOSUserBundle:Registration:register }
 
-fos_js_routing:
-    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
-
-comur_image:
-    resource: "@ComurImageBundle/Resources/config/routing.yml"
-    prefix:   /
-
+_liip_imagine:
+        resource: "@LiipImagineBundle/Resources/config/routing.xml"
 
 app:
     resource: "@AppBundle/Controller/"

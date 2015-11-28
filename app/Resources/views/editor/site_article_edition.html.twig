@@ -1,14 +1,6 @@
 {% extends "editor/layout.html.twig" %}
 
-{% block javascript %}
-    {{ parent() }}
-    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-{% endblock %}
-
 {% block bodyId %}articulos{% endblock %}
-
-{% block bodyIncludes %}{% include "ComurImageBundle:Form:croppable_image_modal.html.twig" with {'include_jquery': false, 'include_bootstrap': false} %}{% endblock %}
 
 {% block siteActionHeader %}
 <span class="col-12 pad">
@@ -61,16 +53,16 @@
         <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
         {% for multimedia in primaryImages %}
         {% set formHtml =
-            form_label(multimedia.image, "O sube una imagen")
-            ~ form_errors(multimedia.image)
-            ~ form_widget(multimedia.image, { 'attr':{ 'tabindex': '-1' } })
+            form_label(multimedia.file, "O sube una imagen")
+            ~ form_errors(multimedia.file)
+            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
         %}
         <div id="primary_image_form_{{ loop.index }}">
         {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
         <label>Imagen Principal</label>
         <span class="caja-imagen">
             <span class="tarjeta imagen">
-                <img alt="" src="{{ relative_images_path|replace({'{site_domain}': currentSite.slug}) ~ multimedia.vars.data.path }}">
+                <img alt="" src="{{ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path }}">
                 <span class="botones der">
                     <a class="boton cuadrado blanco descartar" id="remove_primary_image_{{ loop.index }}" href="#">
                         <span class="icono icon icon-eliminar"></span>
@@ -83,31 +75,31 @@
             {{ formHtml|raw }}
         {% endif %}
         </div>
-        {#<script>
+        <script>
             jQuery("#remove_primary_image_{{ loop.index }}").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
                     jQuery("#primary_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
-                    $("#{{ multimedia.image.vars.id }}").jfilestyle({
+                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
             });
-        </script>#}
+        </script>
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
         {% for multimedia in textImages %}
         {% set formHtml = 
-            form_label(multimedia.image, "Subir la imagen en texto "~loop.index)
-            ~ form_errors(multimedia.image)
-            ~ form_widget(multimedia.image, { 'attr':{ 'tabindex': '-1' } })
+            form_label(multimedia.file, "Subir la imagen en texto "~loop.index)
+            ~ form_errors(multimedia.file)
+            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
         %}
         <div id="text_image_form_{{ loop.index }}">
         {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
             <label>Imagen en Texto {{ loop.index }}</label>
             <span class="caja-imagen">
                 <span class="tarjeta imagen">
-                    <img alt="" src="{{ relative_images_path|replace({'{site_domain}': currentSite.slug}) ~ multimedia.vars.data.path }}">
+                    <img alt="" src="{{ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path }}">
                     <span class="botones der">
                         <a class="boton cuadrado blanco descartar" id="remove_text_image_{{ loop.index }}" href="#">
                             <span class="icono icon icon-eliminar"></span>
@@ -120,16 +112,16 @@
             {{ formHtml|raw }}
         {% endif %}
         </div>
-        {#<script>
+        <script>
             jQuery("#remove_text_image_{{ loop.index }}").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
                     jQuery("#text_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
-                    $("#{{ multimedia.image.vars.id }}").jfilestyle({
+                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
             });
-        </script>#}
+        </script>
         {% endfor %}
 
         <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>

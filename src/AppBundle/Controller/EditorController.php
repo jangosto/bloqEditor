@@ -112,7 +112,7 @@ class EditorController extends Controller
                     $editorialContent->setStatus("saved");
                 }
 
-                $this->saveUploadedMultimedias($editorialContent, $siteObjects[0]);
+                $this->saveUploadedMultimedias($editorialContent, $editorialContentType, $siteObjects[0]);
                 $this->cleanEditorialContentToPersist($editorialContent);
                 $this->setEditorialContentAuthors($editorialContent);
                 $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
@@ -196,7 +196,8 @@ class EditorController extends Controller
     private function setSiteConfig($siteObject)
     {
         $this->setContentsDatabaseConfig($siteObject->getSlug());
-        Globals::setImagesUploadDir(str_replace("{site_domain}", $siteObject->getSlug(), Globals::getImagesUploadDir()));
+        Globals::setImagesUploadDir(str_replace("{site_domain}", $siteObject->getSlug(), $this->container->getParameter('bloq_multimedia.images.root_dir_rel_path')));
+        Globals::setOriginalImagesUploadDir(str_replace("{site_domain}", $siteObject->getSlug(), $this->container->getParameter('bloq_multimedia.images.root_dir_rel_path_originals')));
     }
 
     private function getRolesForUser()
@@ -345,26 +346,18 @@ class EditorController extends Controller
             );
     }
 
-    private function saveUploadedMultimedias($editorialObject, $siteObject)
+    private function saveUploadedMultimedias($editorialObject, $editorialContentType, $siteObject)
     {
-        foreach ($editorialObject->getMultimedias() as $key => $multimedia) {
-            if ($multimedia->getType() == "image" && $multimedia->getFile() !== null) {
-                $uploadPath = $this->container->getParameter('bloq_multimedia.images.root_dir_rel_path');
-                $domainPath = $this->container->getParameter('editor.domain.path');
-                $relImagesDirUrl = $this->container->getParameter('multimedia.images.dir.rel_url');
-
-                $extension = $multimedia->getFile()->guessExtension();
-                $dateDirPart = date("Y/md");
-                $relDirPath = str_replace("{site_domain}", $siteObject->getSlug(), $uploadPath)."/".$dateDirPart."/";
-                $relDirUrl = $relImagesDirUrl."/".$dateDirPart."/";
-                $absDir = $domainPath.$relDirPath;
-                $filename = rand(1, 9999999).'.'.$extension;
-                $multimedia->getFile()->move($absDir, $filename);
-                $editorialObject->getMultimedias()[$key]->setPath("/".$dateDirPart."/".$filename);
+        $config = $this->container->getParameter('editorial_contents');
+        $multimediaManager = $this->container->get("multimedia.multimedia.manager");
+        $imageCropper = $this->container->get('multimedia.images.image_cropper');
+        foreach ($editorialObject->getMultimedias() as $multimedia) {
+            if ($multimedia->getFile() !== null) {
+                $multimediaManager->saveMultimediaItem($multimedia);
+                $imageCropper->setImage($multimedia);
+                $imageCropper->generateImageCrops($config[$editorialContentType]['image_filters_enabled']);
             }
         }
-        
-        return $editorialObject;
     }
 
     private function setEditorialContentAuthors($object)

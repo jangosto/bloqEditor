@@ -20,9 +20,7 @@ class AppKernel extends Kernel
             
             new FOS\UserBundle\FOSUserBundle(),
             new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
-            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
-            new JMS\TranslationBundle\JMSTranslationBundle(),
-            new Comur\ImageBundle\ComurImageBundle(),
+            new Liip\ImagineBundle\LiipImagineBundle(),
 
             new Bloq\Common\EntitiesBundle\BloqEntitiesBundle(),
             new Bloq\Common\EditorBundle\BloqEditorBundle(),
