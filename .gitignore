@@ -1,8 +1,10 @@
 /web/bundles/
 /web/static/
 /web/static
+/web/uploads
 /web/fonts/
 /web/uploads/
+/app/autoload_common.php
 /app/bootstrap.php.cache
 /app/sessions/
 /app/cache/*
