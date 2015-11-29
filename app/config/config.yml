@@ -194,8 +194,13 @@ liip_imagine:
     resolvers:
         default:
             web_path:
-                web_root: %editor.domain.path%
+                web_root: %multimedia.domain.path%
                 cache_prefix: %multimedia.cache_dir.prefix%
+
+    loaders:
+        default:
+            filesystem:
+                data_root: %multimedia.domain.path%
 
     filter_sets:
         article_primary:
