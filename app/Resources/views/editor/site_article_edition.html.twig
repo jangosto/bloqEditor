@@ -10,11 +10,14 @@
 
 {% block siteActionContent %}
 <form class="col-12 clear" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
-    <span class="col-6 pad">
+    <span class="col-12 pad">
         {{ form_label(form.title, "Título del Artículo") }}
         {{ form_errors(form.title) }}
         {{ form_widget(form.title, { 'attr': { 'class': 'texto grande' } }) }}
 
+        <label for="" class="check">{{ form_widget(form.seoTitle) }}Usar título SEO</label>
+    </span>
+    <span class="col-6 pad">
         {{ form_label(form.pretitle, "Antetítulo") }}
         {{ form_errors(form.pretitle) }}
         {{ form_widget(form.pretitle, { 'attr': { 'class': 'texto' } }) }}

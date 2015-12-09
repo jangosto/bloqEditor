@@ -13,7 +13,7 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $userManager = $this->container->get('fos_user.user_manager');
+        $userManager = $this->container->get('entities.user.manager');
 
         return $this->render('editor/home.html.twig', array(
             'user' => $this->getUser(),

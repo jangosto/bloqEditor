@@ -1,3 +1,8 @@
+bloq_entities:
+    entities:
+        user:
+            model_class: &userModelClass Bloq\Common\EntitiesBundle\Entity\User
+
 bloq_editor:
     editorial_contents:
         article:
@@ -21,6 +26,9 @@ bloq_multimedia:
         root_dir_rel_url: %multimedia.images.dir.rel_url%
 
 parameters:
+    bloq_entities.user.class: *userModelClass
+
     bloq_editor.editorial_content.article.model_class: *articleModelClass
+
     bloq_multimedia.images.root_dir_rel_path: *imagesRootDir
     bloq_multimedia.images.root_dir_rel_path_originals: *imagesRootDirOriginals 

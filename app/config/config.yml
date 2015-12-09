@@ -146,10 +146,11 @@ swiftmailer:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
-    user_class: Bloq\Common\EntitiesBundle\Entity\User
+    user_class: %bloq_entities.user.class%
     model_manager_name: users
     service:
         mailer: fos_user.mailer.twig_swift
+        user_manager: entities.user.manager
 
 stfalcon_tinymce:
     include_jquery: true
