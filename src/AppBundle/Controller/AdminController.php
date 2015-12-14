@@ -16,7 +16,7 @@ use AppBundle\Form\Type\UserCreationFormType as AdminUserCreationFormType;
 
 
 /**
- * @Route("/{site}")
+ * @Route("/{site}/admin")
  */
 class AdminController extends Controller
 {

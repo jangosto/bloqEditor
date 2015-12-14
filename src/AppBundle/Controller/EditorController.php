@@ -88,8 +88,6 @@ class EditorController extends Controller
             $editorialContent = $editorialContentManager->getById($id);
             $formType->setAssignedCategories($contentsCategoriesManager->getCategoryIds($editorialContent->getId()));
             $formType->setAssignedTags($contentsTagsManager->getTagIds($editorialContent->getId()));
-//            $editorialContent->setCategoryIds($contentsCategoriesManager->getCategoryIds($editorialContent->getId()));
-//            $editorialContent->setTagIds($contentsTagsManager->getTagIds($editorialContent->getId()));
         }
 
         if (!$request->request->has('save') && !$request->request->has('publish')) {
@@ -97,18 +95,13 @@ class EditorController extends Controller
         }
 
         $form = $this->createForm($formType, $editorialContent);
-       // $form->setData($editorialContent);
         
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
             
             if ($form->isValid()) {
-               // dump($editorialContent);
-               $editorialContent = $form->getData();
-            // dump($editorialContent);die;
-                if ($form->get('publish')->isClicked()) {
-                    $editorialContent->setStatus("published");
-                } elseif($form->get('save')->isClicked()) {
+                $editorialContent = $form->getData();
+                if($form->get('save')->isClicked()) {
                     $editorialContent->setStatus("saved");
                 }
 
@@ -116,11 +109,14 @@ class EditorController extends Controller
                 $this->cleanEditorialContentToPersist($editorialContent);
                 $this->setEditorialContentAuthors($editorialContent);
                 $this->setEditorialContentDates($editorialContent, $form->get('publish')->isClicked());
-                /*$multimediaManager = $this->container->get('multimedia.multimedia.manager');
-                foreach ($editorialContent->getMultimedias() as $multimedia) {
-                    $multimediaManager->save($multimedia);
-                }*/
+                
                 $editorialContentManager->saveEditorialContent($editorialContent);
+
+                if ($form->get('publish')->isClicked()) {
+                    $editorialContent = $editorialContentManager->getById($editorialContent->getId(), true);
+                    $this->container->get('editor.url.manager')->create($editorialContent);
+                    $editorialContent->setStatus("published");
+                }
 
                 $contentsCategoriesManager->saveRelationships($editorialContent);
                 $contentsTagsManager->saveRelationships($editorialContent);
