@@ -118,6 +118,8 @@ class EditorController extends Controller
                     $editorialContent->setStatus("published");
                 }
 
+                $editorialContentManager->saveEditorialContent($editorialContent);
+
                 $contentsCategoriesManager->saveRelationships($editorialContent);
                 $contentsTagsManager->saveRelationships($editorialContent);
 
