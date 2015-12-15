@@ -207,9 +207,9 @@ liip_imagine:
         article_primary:
             quality: 75
             filters:
-                relative_resize: { widen: 940 }
+                relative_resize: { widen: 640 }
         article_intext:
             quality: 75
             filters:
-                relative_resize: { widen: 660 }
+                relative_resize: { widen: 640 }
 
