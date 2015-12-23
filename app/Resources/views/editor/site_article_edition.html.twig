@@ -248,10 +248,10 @@
         function fixData(result, width, height, containerId, inputClass){
             var obj = new Object();
             obj.type = inputClass;
-            obj.width = result.crops[0].width;
-            obj.height = result.crops[0].height;
-            obj.x = result.crops[0].x;
-            obj.y = result.crops[0].y;
+            obj.width = result.topCrop.width;
+            obj.height = result.topCrop.height;
+            obj.x = result.topCrop.x;
+            obj.y = result.topCrop.y;
             var jsonString = JSON.stringify(obj);
             $('#'+containerId+' .'+inputClass).val(jsonString);
         }
