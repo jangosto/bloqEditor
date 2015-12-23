@@ -98,13 +98,13 @@ class EditorController extends Controller
         
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
-            
+
             if ($form->isValid()) {
                 $editorialContent = $form->getData();
+                
                 if($form->get('save')->isClicked()) {
                     $editorialContent->setStatus("saved");
                 }
-
                 $this->saveUploadedMultimedias($editorialContent, $editorialContentType, $siteObjects[0]);
                 $this->cleanEditorialContentToPersist($editorialContent);
                 $this->setEditorialContentAuthors($editorialContent);
@@ -347,12 +347,14 @@ class EditorController extends Controller
     private function saveUploadedMultimedias($editorialObject, $editorialContentType, $siteObject)
     {
         $config = $this->container->getParameter('editorial_contents');
+        $versions = $this->container->getParameter('image_versions_enabled');
         $multimediaManager = $this->container->get("multimedia.multimedia.manager");
         $imageCropper = $this->container->get('multimedia.images.image_cropper');
         foreach ($editorialObject->getMultimedias() as $multimedia) {
             if ($multimedia->getFile() !== null) {
                 $multimediaManager->saveMultimediaItem($multimedia);
                 $imageCropper->setImage($multimedia);
+                $imageCropper->generateImageVersions($multimedia, $versions);
                 $imageCropper->generateImageCrops($config[$editorialContentType]['image_filters_enabled']);
             }
         }

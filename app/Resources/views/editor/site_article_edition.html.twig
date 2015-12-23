@@ -60,32 +60,47 @@
             ~ form_errors(multimedia.file)
             ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
         %}
-        <div id="primary_image_form_{{ loop.index }}">
-        {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
-        <label>Imagen Principal</label>
+        {% set imageHtml = '<label>Imagen Principal</label>
         <span class="caja-imagen">
             <span class="tarjeta imagen">
-                <img alt="" src="{{ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path }}">
+                <img alt="" src="' ~ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path ~ '">
                 <span class="botones der">
-                    <a class="boton cuadrado blanco descartar" id="remove_primary_image_{{ loop.index }}" href="#">
+                    <a class="boton cuadrado blanco descartar" id="remove_primary_image_' ~ loop.index ~ '" href="#">
                         <span class="icono icon icon-eliminar"></span>
                     </a>
                 </span>
-            </span>
-        </span>
-        {{ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) }}
-        {% else %}
-            {{ formHtml|raw }}
-        {% endif %}
+            </span>'
+            ~ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) ~
+        '</span>' %} 
+        <div id="primary_image_form_{{ loop.index }}">
+            <div id="primary_image_form_{{ loop.index }}_input">
+            {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
+                {{ imageHtml | raw }}
+            {% else %}
+                {{ formHtml|raw }}
+            {% endif %}
+            </div>
+            {{ form_widget(multimedia.rectangle, { 'attr':{ 'class': 'rectangle', 'hidden': 'true' } }) }}
+            {{ form_widget(multimedia.square, { 'attr':{ 'class': 'square', 'hidden': 'true' } }) }}
         </div>
         <script>
             jQuery("#remove_primary_image_{{ loop.index }}").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
-                    jQuery("#primary_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
+                    jQuery("#primary_image_form_{{ loop.index }}_input").html('{{ formHtml|raw }}');
                     $("#{{ multimedia.file.vars.id }}").jfilestyle({
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
+            });
+
+            $('#primary_image_form_{{ loop.index }}').on('change', 'input[type=file]', function(e) {
+                handleFiles(this.files, 975, 548, 'primary_image_form_{{ loop.index }}', 'rectangle');
+                handleFiles(this.files, 500, 500, 'primary_image_form_{{ loop.index }}', 'square');
+               
+                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
+                $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                    buttonText: "<span class='icon icon-subir'></span>"
+                });#}
             });
         </script>
         {% endfor %}
@@ -97,33 +112,47 @@
             ~ form_errors(multimedia.file)
             ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
         %}
-        <div id="text_image_form_{{ loop.index }}">
-        {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
-            <label>Imagen en Texto {{ loop.index }}</label>
+        {% set imageHtml = '<label>Imagen en Texto ' ~ loop.index ~ '</label>
             <span class="caja-imagen">
                 <span class="tarjeta imagen">
-                    <img alt="" src="{{ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path }}">
+                    <img alt="" src="' ~ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path ~ '">
                     <span class="botones der">
-                        <a class="boton cuadrado blanco descartar" id="remove_text_image_{{ loop.index }}" href="#">
+                        <a class="boton cuadrado blanco descartar" id="remove_text_image_' ~ loop.index ~ '" href="#">
                             <span class="icono icon icon-eliminar"></span>
                        </a>
                     </span>
-                </span>
-                {{ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) }}
-            </span>
-        {% else %}
-            {{ formHtml|raw }}
-        {% endif %}
+                </span>'
+                ~ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) ~
+            '</span>'
+        %}
+        <div id="text_image_form_{{ loop.index }}">
+            <div id="text_image_form_{{ loop.index }}_input">
+            {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
+                {{ imageHtml|raw }}
+            {% else %}
+                {{ formHtml|raw }}
+            {% endif %}
+            </div>
+            {{ form_widget(multimedia.rectangle, { 'attr':{ 'class': 'rectangle', 'hidden': 'true' } }) }}
         </div>
         <script>
             jQuery("#remove_text_image_{{ loop.index }}").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
-                    jQuery("#text_image_form_{{ loop.index }}").html('{{ formHtml|raw }}');
+                    jQuery("#text_image_form_{{ loop.index }}_input").html('{{ formHtml|raw }}');
                     $("#{{ multimedia.file.vars.id }}").jfilestyle({
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
             });
+
+            $('#text_image_form_{{ loop.index }}').on('change', 'input[type=file]', function(e) {
+                handleFiles(this.files, 975, 548, 'text_image_form_{{ loop.index }}', 'rectangle');
+
+                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
+                $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                    buttonText: "<span class='icon icon-subir'></span>"
+                });#}
+            } );
         </script>
         {% endfor %}
 
@@ -180,8 +209,75 @@
 </form>
 {% endblock %}
 
-{# block bodyJs %}
+{% block bodyJs %}
     {{ parent() }}
-    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-{% endblock #}
+    <script src="{{ statics_domain }}/js/smart-crop.js"></script>
+    <script>
+        function handleFiles(files, width, height, containerId, inputClass){
+            if (files.length > 0) {
+                var file = files[0];
+                if (typeof FileReader !== "undefined" && file.type.indexOf("image") != -1) {
+                    var reader = new FileReader();
+                    // Note: addEventListener doesn't work in Google Chrome for this event
+                    reader.onload = function (evt) {
+                        load(evt.target.result, width, height, containerId, inputClass);
+                    };
+                    reader.readAsDataURL(file);
+
+                    console.log(reader);
+                }
+            }
+        }
+
+        function load(src, width, height, containerId, inputClass){
+            img = new Image();
+            img.onload = function(){
+                analyze(width, height, containerId, inputClass);
+            };
+            img.src = src;
+        }
+        function analyze(width, height, containerId, inputClass){
+            if(!img) return;
+            SmartCrop.crop(img, {
+                width: width,
+                height: height,
+                minScale: 1,
+                debug: true
+            }, function(result){fixData(result, width, height, containerId, inputClass);});
+        }
+        function fixData(result, width, height, containerId, inputClass){
+            var obj = new Object();
+            obj.type = inputClass;
+            obj.width = result.crops[0].width;
+            obj.height = result.crops[0].height;
+            obj.x = result.crops[0].x;
+            obj.y = result.crops[0].y;
+            var jsonString = JSON.stringify(obj);
+            $('#'+containerId+' .'+inputClass).val(jsonString);
+        }
+        {#function draw(result){
+            selectedCrop = result.topCrop;
+            $('.crops').empty().append(_.sortBy(result.crops, function(c){return -c.score.total;}).map(function(crop){
+                return $('<p>')
+                .text('Score: ' + ~~(crop.score.total*10000000) + ', ' + crop.x+'x'+crop.y)
+                .hover(function(){
+                    drawCrop(crop);
+                }, function(){
+                    drawCrop(selectedCrop);
+                })
+                .click(function(){ selectedCrop = crop; drawCrop(selectedCrop); })
+                .data('crop', crop);
+            }));
+            drawCrop(selectedCrop);
+            $('#debug').empty().append(result.debugCanvas);
+        }
+        function drawCrop(crop){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(crop.x, crop.y, crop.width, crop.height);
+        }#}
+    </script>
+{% endblock %}
