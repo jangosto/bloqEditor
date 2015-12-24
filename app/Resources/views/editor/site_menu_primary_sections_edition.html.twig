@@ -1,0 +1,18 @@
+{% extends "editor/layout.html.twig" %}
+
+{% block bodyId %}{% endblock %}
+
+{% block siteActionHeader %}
+<span class="col-12 pad">
+    <h1 class="titulo cuerpo tam38 rojo-500">Edición de Menú Principal (Secciones)</h1>
+</span>
+{% endblock %}
+
+{% block siteActionContent %}
+<span class="col-12 pad">
+    <form action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
+        <input type="hidden" />
+        <input type="submit" class="boton azul" />
+    </form>
+</span>
+{% endblock %}

@@ -179,6 +179,26 @@ class AdminController extends Controller
         return $response;
     }
 
+    /**
+     * @Route("/menu/primary/sections", name="site_editor_menu_primary_sections_edition")
+     */
+    public function siteMenuPrimarySectionsEditionAction(Request $request, $site)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setSiteConfig($siteObjects[0]);
+        $categoryManager = $this->container->get('editor.category.manager');
+
+        $sections = $categoryManager->getAllByParent(0);
+
+        
+
+        return $this->render('editor/site_menu_primary_sections_edition.html.twig', array(
+            'user' => $this->getUser(),
+            'currentSite' => $siteObjects[0],
+            'sections' => $sections
+        ));
+    }
+
     private function setSiteConfig($siteObject)
     {
         $this->setContentsDatabaseConfig($siteObject->getSlug());
