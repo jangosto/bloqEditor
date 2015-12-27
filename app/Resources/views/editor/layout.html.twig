@@ -68,6 +68,7 @@
         <a href="{{ url('site_editor_dashboard', {'site': currentSite.slug}) }}" class="boton cuadrado blanco panel" title="Panel de control"><span class="icono icon icon-dashboard"></span><span class="accion">Panel de control</span></a>
         {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ url('site_editor_category_edition', {'site': currentSite.slug, 'id': 'new'}) }}" class="boton cuadrado blanco secciones" title="Editor de Secciones"><span class="icono icon icon-categoria"></span><span class="accion">Editor de Secciones</span></a>
+        <a href="{{ url('site_editor_menu_primary_sections_edition', {'site': currentSite.slug}) }}" class="boton cuadrado blanco menu" title="Configurar Menú"><span class="icono icon icon-menu"></span><span class="accion">Configurar Menú</span></a>
         <a href="{{ url('site_editor_tag_edition', {'site': currentSite.slug, 'id': 'new'}) }}" class="boton cuadrado blanco tags" title="Editor de Tags"><span class="icono icon icon-tag"></span><span class="accion">Editor de Tags</span></a>
         {% endif %}
         {% for key, editorialContent in editorial_contents %}

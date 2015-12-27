@@ -98,7 +98,7 @@ class EditorController extends Controller
         
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
-
+            
             if ($form->isValid()) {
                 $editorialContent = $form->getData();
                 
@@ -112,6 +112,9 @@ class EditorController extends Controller
                 
                 $editorialContentManager->saveEditorialContent($editorialContent);
 
+                $contentsCategoriesManager->saveRelationships($editorialContent);
+                $contentsTagsManager->saveRelationships($editorialContent);
+
                 if ($form->get('publish')->isClicked()) {
                     $editorialContent = $editorialContentManager->getById($editorialContent->getId(), true);
                     $this->container->get('editor.url.manager')->create($editorialContent);
@@ -119,9 +122,6 @@ class EditorController extends Controller
                 }
 
                 $editorialContentManager->saveEditorialContent($editorialContent);
-
-                $contentsCategoriesManager->saveRelationships($editorialContent);
-                $contentsTagsManager->saveRelationships($editorialContent);
 
                 $route = "site_editor_editorial_content_edition";
 

@@ -1,6 +1,11 @@
 {% extends "editor/layout.html.twig" %}
 
-{% block bodyId %}{% endblock %}
+{% block stylesheet %}
+{{ parent() }}
+<link rel="stylesheet" type="text/css" href="{{ statics_domain }}/css/estilos_juan.css">
+{% endblock %}
+
+{% block bodyId %}menu{% endblock %}
 
 {% block siteActionHeader %}
 <span class="col-12 pad">
@@ -10,9 +15,57 @@
 
 {% block siteActionContent %}
 <span class="col-12 pad">
-    <form action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
-        <input type="hidden" />
-        <input type="submit" class="boton azul" />
+    <span class="col-6 pad">
+        <div class="droppable-container" id="sections-added" ondrop="drop(event)" ondragover="allowDrop(event)">
+        {% for section in menuSections %}
+            <span id="{{ section.id }}" class="boton negro" draggable="true" ondragstart="drag(event)">{{ section.name }}</span>
+        {% endfor %}
+        </div>
+    </span>
+    <span class="col-6 pad">
+        <div class="droppable-container" id="sections-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+        {% for section in sections %}
+            <span id="{{ section.id }}" class="boton negro" draggable="true" ondragstart="drag(event)">{{ section.name }}</span>
+        {% endfor %}
+        </div>
+    </span>
+    <form method="POST" id="menuForm" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
+        <input id="menuConfig" name="menu" type="hidden" />
+        <button type="submit" name="submit" value="set" class="boton azul"><span class="accion">Guardar Menú</span></button>
     </form>
 </span>
+{% endblock %}
+
+{% block bodyJs %}
+{{ parent() }}
+<script>
+    $('#menuForm').submit(function(){
+        var arrayMenu = new Array();
+        var menu = $('#sections-added');
+        menu.children("span").each(function(){
+            arrayMenu.push($(this).attr('id'));
+        });
+        jsonMenu = JSON.stringify(arrayMenu);
+        $('#menuConfig').val(jsonMenu);
+
+        return true;
+    });
+    function drop(ev)
+    {
+        ev.preventDefault();
+        if (ev.target.className == "droppable-container") {
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    }
+
+    function allowDrop(ev)
+    {
+        ev.preventDefault();
+    }
+    function drag(ev)
+    {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+</script>
 {% endblock %}
