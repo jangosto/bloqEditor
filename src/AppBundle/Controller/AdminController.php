@@ -207,6 +207,34 @@ class AdminController extends Controller
         ));
     }
 
+    /**
+     * @Route("/outstandings/contents/", name="site_outstanding_contents_edition")
+     */
+    public function siteOutstandingContentsEditionAction(Request $request, $site)
+    {
+        $siteObjects = $this->getCurrentSiteBySlug($site);
+        $this->setSiteConfig($siteObjects[0]);
+        $contentManager = $this->container->get('editor.editorial_content.manager');
+
+        if ($request->request->get('submit') == 'set') {
+            $outstandings = json_decode($request->request->get('outstandings'));
+            $contentManager->cleanOutstandings();
+            foreach ($outstandings as $position => $contentId) {
+                $contentManager->setInOutstandingsPosition($contentId, $position+1);
+            }
+        }
+
+        $contents = $contentManager->getNotOutstandings();
+        $outstandingContents = $contentManager->getOutstandings();
+
+        return $this->render('editor/site_outstanding_editorial_contents.html.twig', array(
+            'user' => $this->getUser(),
+            'currentSite' => $siteObjects[0],
+            'contents' => $contents,
+            'outstandingContents' => $outstandingContents
+        ));
+    }
+
     private function setSiteConfig($siteObject)
     {
         $this->setContentsDatabaseConfig($siteObject->getSlug());

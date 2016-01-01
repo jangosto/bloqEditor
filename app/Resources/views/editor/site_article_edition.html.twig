@@ -14,13 +14,12 @@
         {{ form_label(form.title, "Título del Artículo") }}
         {{ form_errors(form.title) }}
         {{ form_widget(form.title, { 'attr': { 'class': 'texto grande' } }) }}
-
-        <label for="" class="check">{{ form_widget(form.seoTitle) }}Usar título SEO</label>
     </span>
     <span class="col-6 pad">
         {{ form_label(form.pretitle, "Antetítulo") }}
         {{ form_errors(form.pretitle) }}
         {{ form_widget(form.pretitle, { 'attr': { 'class': 'texto' } }) }}
+        <label for="" class="check">{{ form_widget(form.seoTitle) }}Usar antetítulo SEO</label>
 
         {% for subtitle in form.subtitles %}
         {{ form_label(subtitle, "Subtítulo "~loop.index) }}
@@ -79,6 +78,15 @@
             {% else %}
                 {{ formHtml|raw }}
             {% endif %}
+            {{ form_label(multimedia.title, "Título") }}
+            {{ form_errors(multimedia.title) }}
+            {{ form_widget(multimedia.title, { 'attr': { 'class': 'texto' } }) }}
+            {{ form_label(multimedia.description, "Descripción") }}
+            {{ form_errors(multimedia.description) }}
+            {{ form_widget(multimedia.description, { 'attr': { 'rows': '3' } }) }}
+            {{ form_label(multimedia.author, "Autor") }}
+            {{ form_errors(multimedia.author) }}
+            {{ form_widget(multimedia.author, { 'attr': { 'class': 'texto' } }) }}
             </div>
             {{ form_widget(multimedia.rectangle, { 'attr':{ 'class': 'rectangle', 'hidden': 'true' } }) }}
             {{ form_widget(multimedia.square, { 'attr':{ 'class': 'square', 'hidden': 'true' } }) }}
@@ -132,6 +140,15 @@
             {% else %}
                 {{ formHtml|raw }}
             {% endif %}
+            {{ form_label(multimedia.title, "Título") }}
+            {{ form_errors(multimedia.title) }}
+            {{ form_widget(multimedia.title, { 'attr': { 'class': 'texto' } }) }}
+            {{ form_label(multimedia.description, "Descripción") }}
+            {{ form_errors(multimedia.description) }}
+            {{ form_widget(multimedia.description, { 'attr': { 'rows': '3' } }) }}
+            {{ form_label(multimedia.author, "Autor") }}
+            {{ form_errors(multimedia.author) }}
+            {{ form_widget(multimedia.author, { 'attr': { 'class': 'texto' } }) }}
             </div>
             {{ form_widget(multimedia.rectangle, { 'attr':{ 'class': 'rectangle', 'hidden': 'true' } }) }}
         </div>
