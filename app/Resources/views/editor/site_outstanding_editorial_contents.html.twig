@@ -1,0 +1,68 @@
+{% extends "editor/layout.html.twig" %}
+
+{% block bodyId %}contenidos-destacados{% endblock %}
+
+{% block siteActionHeader %}
+<span class="col-12 pad">
+    <h1 class="titulo cuerpo tam38 rojo-500">Contenidos Destacados</h1>
+</span>
+{% endblock %}
+
+{% block siteActionContent %}
+<span class="col-12 pad">
+    <span class="col-6 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Contenidos Destacados</legend>
+        <div class="droppable-container" id="contents-added" ondrop="drop(event)" ondragover="allowDrop(event)">
+        {% for content in outstandingContents %}
+            <div id="{{ content.id }}" class="elemento elemento-contenido" draggable="true" ondragstart="drag(event)">{{ content.title }}</div>
+        {% endfor %}
+        </div>
+    </span>
+    <span class="col-6 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Contenidos Disponibles</legend>
+        <div class="droppable-container" id="contents-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+        {% for content in contents %}
+            <div id="{{ content.id }}" class="elemento elemento-contenido" draggable="true" ondragstart="drag(event)">{{ content.title }}</div>
+        {% endfor %}
+        </div>
+    </span>
+    <form method="POST" id="outstandingsForm" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
+        <input id="outstandingsConfig" name="outstandings" type="hidden" />
+        <button type="submit" name="submit" value="set" class="boton azul"><span class="accion">Guardar Destacados</span></button>
+    </form>
+</span>
+{% endblock %}
+
+{% block bodyJs %}
+{{ parent() }}
+<script>
+    $('#outstandingsForm').submit(function(){
+        var arrayOutstandings = new Array();
+        var outstandings = $('#contents-added');
+        outstandings.children(".elemento").each(function(){
+            arrayOutstandings.push($(this).attr('id'));
+        });
+        jsonOutstandings = JSON.stringify(arrayOutstandings);
+        $('#outstandingsConfig').val(jsonOutstandings);
+
+        return true;
+    });
+    function drop(ev)
+    {
+        ev.preventDefault();
+        if (ev.target.className == "droppable-container") {
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    }
+
+    function allowDrop(ev)
+    {
+        ev.preventDefault();
+    }
+    function drag(ev)
+    {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+</script>
+{% endblock %}

@@ -11,16 +11,18 @@
 {% block siteActionContent %}
 <span class="col-12 pad">
     <span class="col-6 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Secciones del Menú</legend>
         <div class="droppable-container" id="sections-added" ondrop="drop(event)" ondragover="allowDrop(event)">
         {% for section in menuSections %}
-            <span id="{{ section.id }}" class="boton negro" draggable="true" ondragstart="drag(event)">{{ section.name }}</span>
+            <div id="{{ section.id }}" class="elemento elemento-seccion" draggable="true" ondragstart="drag(event)">{{ section.name }}</div>
         {% endfor %}
         </div>
     </span>
     <span class="col-6 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Secciones Disponibles</legend>
         <div class="droppable-container" id="sections-list" ondrop="drop(event)" ondragover="allowDrop(event)">
         {% for section in sections %}
-            <span id="{{ section.id }}" class="boton negro" draggable="true" ondragstart="drag(event)">{{ section.name }}</span>
+            <div id="{{ section.id }}" class="elemento elemento-seccion" draggable="true" ondragstart="drag(event)">{{ section.name }}</div>
         {% endfor %}
         </div>
     </span>
@@ -37,7 +39,7 @@
     $('#menuForm').submit(function(){
         var arrayMenu = new Array();
         var menu = $('#sections-added');
-        menu.children("span").each(function(){
+        menu.children(".elemento").each(function(){
             arrayMenu.push($(this).attr('id'));
         });
         jsonMenu = JSON.stringify(arrayMenu);
