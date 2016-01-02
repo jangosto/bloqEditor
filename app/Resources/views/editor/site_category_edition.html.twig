@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block siteActionContent %}
+{% if is_granted('ROLE_ADMIN') %}
 <span class="col-5 pad">
     <form class="col-12 clear" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" {{ form_enctype(form) }} method="POST">
         {{ form_label(form.name, "Nombre de la Categoría") }}
@@ -43,5 +44,59 @@
         </tbody>
     </table>
 </span>
+{% endif %}
+<span class="col-6 pad">
+    <legend class="titulo tam24 cuerpo rojo-500">Categorías Destacadas</legend>
+    <div class="droppable-container" id="contents-added" ondrop="drop(event)" ondragover="allowDrop(event)">
+    {% for content in outstandingCategories %}
+        <div id="{{ content.id }}" class="elemento elemento-seccion" draggable="true" ondragstart="drag(event)">{{ content.name }}</div>
+    {% endfor %}
+    </div>
+</span>
+<span class="col-6 pad">
+    <legend class="titulo tam24 cuerpo rojo-500">Categorías Disponibles</legend>
+    <div class="droppable-container" id="contents-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+    {% for content in notOutstandingCategories %}
+        <div id="{{ content.id }}" class="elemento elemento-seccion" draggable="true" ondragstart="drag(event)">{{ content.name }}</div>
+    {% endfor %}
+    </div>
+</span>
+<form method="POST" id="outstandingsForm" action="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
+    <input id="outstandingsConfig" name="outstandings" type="hidden" />
+    <button type="submit" name="submit" value="set" class="boton azul"><span class="accion">Guardar Destacadas</span></button>
+</form>
 {% endblock %}
 
+{% block bodyJs %}
+{{ parent() }}
+<script>
+    $('#outstandingsForm').submit(function(){
+        var arrayOutstandings = new Array();
+        var outstandings = $('#contents-added');
+        outstandings.children(".elemento").each(function(){
+            arrayOutstandings.push($(this).attr('id'));
+        });
+        jsonOutstandings = JSON.stringify(arrayOutstandings);
+        $('#outstandingsConfig').val(jsonOutstandings);
+
+        return true;
+    });
+    function drop(ev)
+    {
+        ev.preventDefault();
+        if (ev.target.className == "droppable-container") {
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    }
+
+    function allowDrop(ev)
+    {
+        ev.preventDefault();
+    }
+    function drag(ev)
+    {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+</script>
+{% endblock %}
