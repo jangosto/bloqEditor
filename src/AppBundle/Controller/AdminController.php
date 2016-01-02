@@ -25,6 +25,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/category/{id}/", name="site_editor_category_edition")
+     * @Security("has_role('ROLE_SUPERVISOR')")
      */
     public function siteCategoryEditionAction(Request $request, $site, $id)
     {
@@ -59,18 +60,31 @@ class AdminController extends Controller
             return $response;
         }
 
+        if ($request->request->get('submit') == 'set') {
+            $outstandings = json_decode($request->request->get('outstandings'));
+            $categoryManager->cleanOutstandings();
+            foreach ($outstandings as $position => $contentId) {
+                $categoryManager->setInOutstandingsPosition($contentId, $position+1);
+            }
+        }
+
         $categories = $categoryManager->getAllWithHierarchy();
+        $outstandingCategories = $categoryManager->getOutstandings();
+        $notOutstandingCategories = $categoryManager->getNotOutstandings();
 
         return $this->render('editor/site_category_edition.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
-            "form" => $form->createView(),
-            "categories" => $categories,
+            'form' => $form->createView(),
+            'categories' => $categories,
+            'outstandingCategories' => $outstandingCategories,
+            'notOutstandingCategories' => $notOutstandingCategories
         ));
     }
 
     /**
      * @Route("/category/{id}/enable", name="site_editor_category_enable")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function siteCategoryEnableAction(Request $request, $site, $id)
     {
@@ -87,6 +101,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/category/{id}/disable", name="site_editor_category_disable")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function siteCategoryDisableAction(Request $request, $site, $id)
     {
@@ -103,6 +118,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/tag/{id}/", name="site_editor_tag_edition")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function siteTagEditionAction(Request $request, $site, $id)
     {
@@ -149,6 +165,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/tag/{id}/enable", name="site_editor_tag_enable")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function siteTagEnableAction(Request $request, $site, $id)
     {
@@ -165,6 +182,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/tag/{id}/disable", name="site_editor_tag_disable")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function siteTagDisableAction(Request $request, $site, $id)
     {
@@ -181,6 +199,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/menu/primary/sections", name="site_editor_menu_primary_sections_edition")
+     * @Security("has_role('ROLE_SUPERVISOR')")
      */
     public function siteMenuPrimarySectionsEditionAction(Request $request, $site)
     {
@@ -209,6 +228,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/outstandings/contents/", name="site_outstanding_contents_edition")
+     * @Security("has_role('ROLE_SUPERVISOR')")
      */
     public function siteOutstandingContentsEditionAction(Request $request, $site)
     {

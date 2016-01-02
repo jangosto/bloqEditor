@@ -43,7 +43,7 @@ security:
 #        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/editor, role: ROLE_EDITOR }
-        - { path: /admin, role: ROLE_ADMIN }
-        - { path: /supervisor, role: ROLE_SUPERVISOR }
+#        - { path: /admin, role: ROLE_ADMIN }
+#        - { path: /supervisor, role: ROLE_SUPERVISOR }
         - { path: ^/, role: ROLE_EDITOR }
 
