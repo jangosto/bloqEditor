@@ -235,6 +235,7 @@ class AdminController extends Controller
         $siteObjects = $this->getCurrentSiteBySlug($site);
         $this->setSiteConfig($siteObjects[0]);
         $contentManager = $this->container->get('editor.editorial_content.manager');
+        $searchQuery = "";
 
         if ($request->request->get('submit') == 'set') {
             $outstandings = json_decode($request->request->get('outstandings'));
@@ -242,16 +243,23 @@ class AdminController extends Controller
             foreach ($outstandings as $position => $contentId) {
                 $contentManager->setInOutstandingsPosition($contentId, $position+1);
             }
+        } elseif ($request->request->get('submit') == 'search') {
+            $searchQuery = $request->request->get('title'); 
         }
 
-        $contents = $contentManager->getNotOutstandings();
+        if (isset($searchQuery) && strlen($searchQuery) > 0) {
+            $contents = $contentManager->searchByTitle($searchQuery, 8, 0, "AND editorial_content.outstanding = 0");
+        } else {
+            $contents = $contentManager->getNotOutstandings(8);
+        }
         $outstandingContents = $contentManager->getOutstandings();
 
         return $this->render('editor/site_outstanding_editorial_contents.html.twig', array(
             'user' => $this->getUser(),
             'currentSite' => $siteObjects[0],
             'contents' => $contents,
-            'outstandingContents' => $outstandingContents
+            'outstandingContents' => $outstandingContents,
+            'searchQuery' => $searchQuery
         ));
     }
 

@@ -42,6 +42,7 @@ class EditorController extends Controller
         $status = array("published", "removed", "saved");
         $siteObjects = $this->getCurrentSiteBySlug($site);
         $this->setSiteConfig($siteObjects[0]);
+        $searchQuery = "";
 
         $contents = array();
         $numContents = array();
@@ -49,9 +50,14 @@ class EditorController extends Controller
         foreach ($status as $state) {
             $contentsTmp = $editorialContentManager->getAllByStatus($state);
             $numContents[$state] = count($contentsTmp);
-            if ($filter == $state) {
-                $contents = $contentsTmp;
-            }
+        }
+
+        if ($request->request->get('submit') == 'search') {
+            $searchQuery = $request->request->get('title');
+            $filter = "";
+            $contents = $editorialContentManager->searchByTitle($searchQuery, 10);
+        } else {
+            $contents = $editorialContentManager->getAllByStatus($filter, 10);
         }
 
         $this->cleanupManager($editorialContentManager);
@@ -62,7 +68,8 @@ class EditorController extends Controller
             'currentEditorialContent' => $editorialContentType,
             'contents' => $contents,
             'numContents' => $numContents,
-            'filter' => $filter
+            'filter' => $filter,
+            'searchQuery' => $searchQuery
         ));
     }
 
