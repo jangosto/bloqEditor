@@ -10,6 +10,10 @@
 
 {% block siteActionContent %}
 <span class="col-12 pad">
+    <form method="POST" action=""{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
+        <input id="search-by-title" class="texto" type="text" name="title" value="{{ searchQuery }}">
+        <button type="submit" name="submit" value="search" class="boton azul"><span class="accion">Filtrar</span></button>
+    </form>
     <span class="col-6 pad">
         <legend class="titulo tam24 cuerpo rojo-500">Contenidos Destacados</legend>
         <div class="droppable-container" id="contents-added" ondrop="drop(event)" ondragover="allowDrop(event)">
