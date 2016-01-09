@@ -36,12 +36,16 @@ class EditorController extends Controller
 
     /**
      * @Route("/{editorialContentType}/{filter}/", name="site_editor_editorial_content_list", requirements={"filter": "published|removed|saved"})
+     * @Route("/{editorialContentType}/{filter}/{page}/", name="site_editor_editorial_content_list_page", requirements={"filter": "published|removed|saved", "page": "[2-9]+"})
+     * @Route("/{editorialContentType}/search/", name="site_editor_editorial_content_list_search")
+     * @Route("/{editorialContentType}/search/{page}", name="site_editor_editorial_content_list_search_page", requirements={"page": "[2-9]+"})
      */
-    public function siteEditorialContentListAction(Request $request, $site, $editorialContentType, $filter)
+    public function siteEditorialContentListAction(Request $request, $site, $editorialContentType, $filter = "", $page = "")
     {
         $status = array("published", "removed", "saved");
         $siteObjects = $this->getCurrentSiteBySlug($site);
         $this->setSiteConfig($siteObjects[0]);
+        $numPerPage = $this->container->getParameter("")
         $searchQuery = "";
 
         $contents = array();
