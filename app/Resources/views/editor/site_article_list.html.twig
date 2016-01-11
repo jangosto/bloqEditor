@@ -7,7 +7,7 @@
     <h1 class="titulo tam38 rojo-500">Artículos</h1>
 </span>
 <span class="col-12 clear">
-    <form method="POST" action=""{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">
+    <form method="GET" action="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': 'search'}) }}">
         <input id="search-by-title" class="texto" type="text" name="title" value="{{ searchQuery }}">
         <button type="submit" name="submit" value="search" class="boton azul"><span class="accion">Filtrar</span></button>
     </form>
@@ -44,6 +44,19 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% set numPages = (numContents[filter] / numPerPage)|round(0, 'ceil') %}
+        {% if numPages > 1 %}
+        {% if filter == 'search' %}{% set queryString = "?title=" ~ searchQuery ~ "&submit=search" %}{% else %}{% set queryString = "" %}{% endif %}
+        <div class="pagination">
+        <a class="pagination-button" href="{% if currentPage == 2 %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% elseif currentPage == 1 %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': numPages}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': currentPage-1}) ~ queryString }}{% endif %}"><</a>
+        <ul>
+        {% for pageIndicator in 1..numPages %}
+            <li class="pagination-button">{% if currentPage != loop.index %}<a href="{% if loop.index == 1 %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': loop.index}) ~ queryString }}{% endif %}">{% endif %}{{ loop.index }}{% if currentPage != loop.index %}</a>{% endif %}</li>
+        {% endfor %}
+        </ul>
+        <a class="pagination-button" href="{% if currentPage == numPages %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% elseif currentPage == 1 %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': 2}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': currentPage+1}) ~ queryString }}{% endif %}">></a>
+        </div>
+        {% endif %}
     </span>
 </span>
 {% endblock %}
