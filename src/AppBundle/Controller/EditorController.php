@@ -35,14 +35,28 @@ class EditorController extends Controller
     }
 
     /**
-     * @Route("/{editorialContentType}/{filter}/", name="site_editor_editorial_content_list", requirements={"filter": "published|removed|saved"})
+     * @Route("/{editorialContentType}/{filter}/", name="site_editor_editorial_content_list", requirements={"filter": "published|removed|saved|search"})
+     * @Route("/{editorialContentType}/{filter}/{page}/", name="site_editor_editorial_content_list_page", requirements={"filter": "published|removed|saved|search", "page": "[2-9]+"})
      */
-    public function siteEditorialContentListAction(Request $request, $site, $editorialContentType, $filter)
+    public function siteEditorialContentListAction(Request $request, $site, $editorialContentType, $filter = null, $page = null)
     {
         $status = array("published", "removed", "saved");
         $siteObjects = $this->getCurrentSiteBySlug($site);
         $this->setSiteConfig($siteObjects[0]);
+        $numPerPage = 10;
         $searchQuery = "";
+
+        if (is_numeric($page) && $page > 1) {
+            $currentPage = $page;
+        } else {
+            $currentPage = 1;
+        }
+
+        if ($page != null && is_numeric($page)) {
+            $offset = ($page - 1)*$numPerPage;
+        } else {
+            $offset = 0;
+        }
 
         $contents = array();
         $numContents = array();
@@ -52,12 +66,13 @@ class EditorController extends Controller
             $numContents[$state] = count($contentsTmp);
         }
 
-        if ($request->request->get('submit') == 'search') {
-            $searchQuery = $request->request->get('title');
-            $filter = "";
-            $contents = $editorialContentManager->searchByTitle($searchQuery, 10);
+        if ($request->query->get('submit') == 'search' && $filter == 'search') {
+            $searchQuery = $request->query->get('title');
+            $numContents['search'] = count($editorialContentManager->searchByTitle($searchQuery));
+            $filter = "search";
+            $contents = $editorialContentManager->searchByTitle($searchQuery, $numPerPage, $offset);
         } else {
-            $contents = $editorialContentManager->getAllByStatus($filter, 10);
+            $contents = $editorialContentManager->getAllByStatus($filter, $numPerPage, $offset);
         }
 
         $this->cleanupManager($editorialContentManager);
@@ -69,7 +84,9 @@ class EditorController extends Controller
             'contents' => $contents,
             'numContents' => $numContents,
             'filter' => $filter,
-            'searchQuery' => $searchQuery
+            'numPerPage' => $numPerPage,
+            'searchQuery' => $searchQuery,
+            'currentPage' => $currentPage
         ));
     }
 
