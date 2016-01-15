@@ -35,9 +35,9 @@
                     <th></th>
                 </tr>
                 {% for content in contents %}
-                <tr>
+                <tr class="gris-500">
                     <td>{{ content.createdDT|date("d/m/Y") }}</td>
-                    <td><span class="titulo tam18">{{ content.title }}<span></td>
+                    <td><a class="titulo tam18" href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}"><strong>{{ content.title }}</strong><a></td>
                     <td><a class="boton cuadrado negro" href="{{ url('site_editor_editorial_content_edition', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}"><span class="icono icon icon-editar"></span></a></td>
                     <td><a class="boton cuadrado negro" href="{% if content.status == 'removed' %}{{ url('site_editor_editorial_content_restore', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}{% else %}{{ url('site_editor_editorial_content_remove', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'id': content.id}) }}{% endif %}"><span class="icono icon icon-{% if content.status == 'removed' %}restaurar{% else %}eliminar{% endif %}"></span></a></td>
                 </tr>
@@ -47,15 +47,15 @@
         {% set numPages = (numContents[filter] / numPerPage)|round(0, 'ceil') %}
         {% if numPages > 1 %}
         {% if filter == 'search' %}{% set queryString = "?title=" ~ searchQuery ~ "&submit=search" %}{% else %}{% set queryString = "" %}{% endif %}
-        <div class="pagination">
-        <a class="pagination-button" href="{% if currentPage == 2 %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% elseif currentPage == 1 %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': numPages}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': currentPage-1}) ~ queryString }}{% endif %}"><</a>
-        <ul>
+        <ul class="paginacion">
+            <li><a href="{% if currentPage == 2 %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% elseif currentPage == 1 %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': numPages}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': currentPage-1}) ~ queryString }}{% endif %}"><span class="icon icon-skip-previous"></span></a></li>
+            <li><a href="{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}"><span class="icon icon-fast-rewind"></span></a></li>
         {% for pageIndicator in 1..numPages %}
-            <li class="pagination-button">{% if currentPage != loop.index %}<a href="{% if loop.index == 1 %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': loop.index}) ~ queryString }}{% endif %}">{% endif %}{{ loop.index }}{% if currentPage != loop.index %}</a>{% endif %}</li>
+            <li><a href="{% if loop.index == 1 %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': loop.index}) ~ queryString }}{% endif %}" {% if currentPage == loop.index %}class="activo"{% endif %}>{{ loop.index }}</a></li>
         {% endfor %}
+            <li><a href="{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': numPages}) ~ queryString }}"><span class="icon icon-fast-forward"></span></a></li>
+            <li><a href="{% if currentPage == numPages %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% elseif currentPage == 1 %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': 2}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': currentPage+1}) ~ queryString }}{% endif %}"><span class="icon icon-skip-next"></span></a>
         </ul>
-        <a class="pagination-button" href="{% if currentPage == numPages %}{{ url('site_editor_editorial_content_list', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter}) ~ queryString }}{% elseif currentPage == 1 %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': 2}) ~ queryString }}{% else %}{{ url('site_editor_editorial_content_list_page', {'site': currentSite.slug, 'editorialContentType': currentEditorialContent, 'filter': filter, 'page': currentPage+1}) ~ queryString }}{% endif %}">></a>
-        </div>
         {% endif %}
     </span>
 </span>
