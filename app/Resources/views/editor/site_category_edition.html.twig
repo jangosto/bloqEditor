@@ -20,6 +20,10 @@
         {{ form_errors(form.slug) }}
         {{ form_widget(form.slug, { 'attr': { 'class': 'texto' } }) }}
 
+        {{ form_label(form.metaTitle, "Meta Title de la Categoría") }}
+        {{ form_errors(form.metaTitle) }}
+        {{ form_widget(form.metaTitle, { 'attr': { 'class': 'texto' } }) }}
+
         {{ form_label(form.description, "Descripción de la Categoría") }}
         {{ form_errors(form.description) }}
         {{ form_widget(form.description, { 'attr': { 'rows': '3' } }) }}
