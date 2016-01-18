@@ -114,18 +114,19 @@ class EditorController extends Controller
             $formType->setAssignedTags($contentsTagsManager->getTagIds($editorialContent->getId()));
         }
 
-        if (!$request->request->has('save') && !$request->request->has('publish')) {
+        /*if (!$request->request->has('save') && !$request->request->has('publish')) {
             $this->setEdidtorialContentForForm($editorialContent);
-        }
+        }*/
 
         $form = $this->createForm($formType, $editorialContent);
         
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
-            
+
             if ($form->isValid()) {
                 $editorialContent = $form->getData();
-                
+                dump($editorialContent->getMultimedias());die;
+
                 if($form->get('save')->isClicked()) {
                     $editorialContent->setStatus("saved");
                 }
