@@ -45,12 +45,12 @@
         </script>
         <ul class="multimedias" data-prototype="{{ include('BloqMultimediaBundle:prototypes:multimedia_form_prototype.html.twig', { 'form': form.multimedias.vars.prototype, 'type': 'image' })|e }}">
         {% for multimedia in form.multimedias %}
-            <li data-index="{{ multimedia.vars.name }}">{{ multimediaForm.existingMultimediaForm(multimedia) }}</li>
+            <li id="multimedia_element_{{ multimedia.vars.name }}" data-index="{{ multimedia.vars.name }}">{{ multimediaForm.existingMultimediaForm(multimedia) }}</li>
         {% endfor %}
         </ul>
 
         <script>
-            jQuery(".descartar").click(function(){
+            jQuery(".remove-image").click(function(){
                 if (window.confirm("¿Seguro que desea borrar la imagen?")) {
                     var $multimediaElement = jQuery(this).closest('li');
                     var index = $multimediaElement.data('index');
@@ -60,6 +60,7 @@
                         buttonText: "<span class='icon icon-subir'></span>"
                     });
                 }
+                return false;
             });
 
             jQuery("ul.multimedias").on('change', '.type-selector', function(){
@@ -68,6 +69,17 @@
 
             jQuery("ul.multimedias").on('change', '.position-selector', function(){
                 setPrimaryOptionEnabling();
+            });
+
+            $('ul.multimedias').on('change', 'input[type=file]', function(e) {
+                containerId = jQuery(this).closest('li').attr('id');
+                handleFiles(this.files, 975, 548, containerId, 'rectangle');
+                handleFiles(this.files, 500, 500, containerId, 'square');
+
+                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
+                $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                    buttonText: "<span class='icon icon-subir'></span>"
+                });#}
             });
 
             function setPrimaryOptionEnabling()
@@ -126,6 +138,10 @@
                 // Get the ul that holds the collection of tags
                 $collectionHolder = $('ul.multimedias');
 
+                $collectionHolder.find('li').each(function() {
+                    addMultimediaFormDeleteLink($(this));
+                });
+
                 // add the "add a tag" anchor and li to the tags ul
                 $collectionHolder.append($newMultimediaLi);
 
@@ -158,13 +174,28 @@
                 $collectionHolder.data('index', index + 1);
 
                 // Display the form in the page in an li, before the "Add a tag" link li
-                var $newFormLi = $('<li data-index="'+index+'"></li>').append(newForm);
+                var $newFormLi = $('<li id="multimedia_element_'+index+'" data-index="'+index+'"></li>').append(newForm);
                 $newMultimediaLi.before($newFormLi);
+
+                addMultimediaFormDeleteLink($newFormLi);
 
                 $newFormLi.find("input[type='file']").jfilestyle({
                     buttonText: "<span class='icon icon-subir'></span>"
                 });
             }
+
+            function addMultimediaFormDeleteLink($MultimediaFormLi) {
+                var $removeFormA = $('<a style="float:left" class="boton cuadrado rojo remove-multimedia" href="#"><span class="icono icon icon-eliminar"></span></a>');
+                $MultimediaFormLi.prepend($removeFormA);
+
+                $removeFormA.on('click', function(e) {
+                    // prevent the link from creating a "#" on the URL
+                    e.preventDefault();
+
+                    // remove the li for the tag form
+                    $MultimediaFormLi.remove();
+            });
+}
         </script>
 
         {# multimediaForm.imageControlScript(form.multimedias.vars.prototype, 'caja-imagen') #}

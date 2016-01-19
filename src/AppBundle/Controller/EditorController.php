@@ -125,7 +125,6 @@ class EditorController extends Controller
 
             if ($form->isValid()) {
                 $editorialContent = $form->getData();
-                dump($editorialContent->getMultimedias());die;
 
                 if($form->get('save')->isClicked()) {
                     $editorialContent->setStatus("saved");
