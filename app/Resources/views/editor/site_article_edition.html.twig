@@ -1,5 +1,7 @@
 {% extends "editor/layout.html.twig" %}
 
+{% import "BloqMultimediaBundle::macros/multimedia_form.html.twig" as multimediaForm %}
+
 {% block bodyId %}articulos{% endblock %}
 
 {% block siteActionHeader %}
@@ -36,6 +38,172 @@
         {{ tinymce_init() }}
     </span>
     <span class="col-3 pad">
+        <script>
+            var emptyImageInput = '{% spaceless %}{{ multimediaForm.imageInputPrototype() }}{% endspaceless %}';
+            var emptyVideoAudioForm = '{% spaceless %}{{ multimediaForm.videoAudioForm(form.multimedias.vars.prototype) }}{% endspaceless %}';
+            {#var imageForm = '{{ multimediaForm.imageForm(form.multimedias.vars.prototype, true) }}';#}
+        </script>
+        <ul class="multimedias" data-prototype="{{ include('BloqMultimediaBundle:prototypes:multimedia_form_prototype.html.twig', { 'form': form.multimedias.vars.prototype, 'type': 'image' })|e }}">
+        {% for multimedia in form.multimedias %}
+            <li id="multimedia_element_{{ multimedia.vars.name }}" data-index="{{ multimedia.vars.name }}">{{ multimediaForm.existingMultimediaForm(multimedia) }}</li>
+        {% endfor %}
+        </ul>
+
+        <script>
+            jQuery(".remove-image").click(function(){
+                if (window.confirm("¿Seguro que desea borrar la imagen?")) {
+                    var $multimediaElement = jQuery(this).closest('li');
+                    var index = $multimediaElement.data('index');
+                    $multimediaElement.find(".caja-imagen").replaceWith(emptyImageInput.replace(/__name__/g, index));
+
+                    $multimediaElement.find("input[type='file']").jfilestyle({
+                        buttonText: "<span class='icon icon-subir'></span>"
+                    });
+                }
+                return false;
+            });
+
+            jQuery("ul.multimedias").on('change', '.type-selector', function(){
+                changeMultimediaTypeForm(jQuery(this).closest('li'));
+            });
+
+            jQuery("ul.multimedias").on('change', '.position-selector', function(){
+                setPrimaryOptionEnabling();
+            });
+
+            $('ul.multimedias').on('change', 'input[type=file]', function(e) {
+                containerId = jQuery(this).closest('li').attr('id');
+                handleFiles(this.files, 975, 548, containerId, 'rectangle');
+                handleFiles(this.files, 500, 500, containerId, 'square');
+
+                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
+                $("#{{ multimedia.file.vars.id }}").jfilestyle({
+                    buttonText: "<span class='icon icon-subir'></span>"
+                });#}
+            });
+
+            function setPrimaryOptionEnabling()
+            {
+                var primaryImageSelected = false;
+                var primaryImageId = "";
+                jQuery("ul.multimedias li").each(function(){
+                    if (jQuery(this).find(".position-selector").val() == "primary") {
+                        primaryImageSelected = true;
+                        primaryImageId = jQuery(this).find(".position-selector").attr('id');
+                    }
+                });
+                if (primaryImageSelected == true) {
+                    jQuery("ul.multimedias li .position-selector").not("ul.multimedias li #"+primaryImageId).each(function(){
+                        jQuery(this).find("option[value='primary']").attr('disabled', 'disabled')
+                    });
+                } else {
+                    jQuery("ul.multimedias li").each(function(){
+                        if (jQuery(this).find(".type-selector").val() == 'image') {
+                            jQuery(this).find(".position-selector option[value='primary']").removeAttr('disabled');
+                        } else {
+                            jQuery(this).find(".position-selector option[value='primary']").attr('disabled', 'disabled');
+                        }
+                    });
+                }
+            }
+
+            function changeMultimediaTypeForm(multimediaElement)
+            {
+                var multimediaType = multimediaElement.find(".type-selector").val();
+                var typeSpecElem = multimediaElement.find('span.type-specific');
+                var index = multimediaElement.data('index');
+
+                if (multimediaType == "image" && typeSpecElem.length == 0) {
+                    var prototype = $collectionHolder.data('prototype');
+                    var newForm = prototype.replace(/__name__/g, index);
+                    multimediaElement.html(newForm);
+                    multimediaElement.find("input[type='file']").jfilestyle({
+                        buttonText: "<span class='icon icon-subir'></span>"
+                    });
+                } else if ((multimediaType == "video" || multimediaType == "audio") && typeSpecElem.length > 0) {
+                    typeSpecElem.replaceWith(emptyVideoAudioForm.replace(/__name__/g, index));
+                }
+                setPrimaryOptionEnabling();
+            }
+        </script>
+
+        <script>
+            var collectionHolder;
+
+            var $addMultimediaButton = $('<button class="add_multimedia boton negro">Añadir Multimedia</button>');
+            var $newMultimediaLi = $('<li></li>').append($addMultimediaButton);
+
+            jQuery(document).ready(function() {
+                setPrimaryOptionEnabling();
+                // Get the ul that holds the collection of tags
+                $collectionHolder = $('ul.multimedias');
+
+                $collectionHolder.find('li').each(function() {
+                    addMultimediaFormDeleteLink($(this));
+                });
+
+                // add the "add a tag" anchor and li to the tags ul
+                $collectionHolder.append($newMultimediaLi);
+
+                // count the current form inputs we have (e.g. 2), use that as the new
+                // index when inserting a new item (e.g. 2)
+                $collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+                $addMultimediaButton.on('click', function(e) {
+                    // prevent the link from creating a "#" on the URL
+                    e.preventDefault();
+
+                    // add a new tag form (see next code block)
+                    addMultimediaForm($collectionHolder, $newMultimediaLi);
+                    setPrimaryOptionEnabling();
+                });
+            });
+
+            function addMultimediaForm($collectionHolder, $newMultimediaLi) {
+                // Get the data-prototype explained earlier
+                var prototype = $collectionHolder.data('prototype');
+
+                // get the new index
+                var index = $collectionHolder.data('index');
+
+                // Replace '__name__' in the prototype's HTML to
+                // instead be a number based on how many items we have
+                var newForm = prototype.replace(/__name__/g, index);
+
+                // increase the index with one for the next item
+                $collectionHolder.data('index', index + 1);
+
+                // Display the form in the page in an li, before the "Add a tag" link li
+                var $newFormLi = $('<li id="multimedia_element_'+index+'" data-index="'+index+'"></li>').append(newForm);
+                $newMultimediaLi.before($newFormLi);
+
+                addMultimediaFormDeleteLink($newFormLi);
+
+                $newFormLi.find("input[type='file']").jfilestyle({
+                    buttonText: "<span class='icon icon-subir'></span>"
+                });
+            }
+
+            function addMultimediaFormDeleteLink($MultimediaFormLi) {
+                var $removeFormA = $('<a style="float:left" class="boton cuadrado rojo remove-multimedia" href="#"><span class="icono icon icon-eliminar"></span></a>');
+                $MultimediaFormLi.prepend($removeFormA);
+
+                $removeFormA.on('click', function(e) {
+                    // prevent the link from creating a "#" on the URL
+                    e.preventDefault();
+
+                    // remove the li for the tag form
+                    $MultimediaFormLi.remove();
+            });
+}
+        </script>
+
+        {# multimediaForm.imageControlScript(form.multimedias.vars.prototype, 'caja-imagen') #}
+
+
+
+
+{#
         {% set primaryImages = [] %}
         {% set textImages = [] %}
         {% set videos = [] %}
@@ -103,13 +271,13 @@
 
             $('#primary_image_form_{{ loop.index }}').on('change', 'input[type=file]', function(e) {
                 handleFiles(this.files, 975, 548, 'primary_image_form_{{ loop.index }}', 'rectangle');
-                handleFiles(this.files, 500, 500, 'primary_image_form_{{ loop.index }}', 'square');
+                handleFiles(this.files, 500, 500, 'primary_image_form_{{ loop.index }}', 'square');#}
                
                 {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
                 $("#{{ multimedia.file.vars.id }}").jfilestyle({
                     buttonText: "<span class='icon icon-subir'></span>"
                 });#}
-            });
+{#            });
         </script>
         {% endfor %}
 
@@ -163,38 +331,24 @@
             });
 
             $('#text_image_form_{{ loop.index }}').on('change', 'input[type=file]', function(e) {
-                handleFiles(this.files, 975, 548, 'text_image_form_{{ loop.index }}', 'rectangle');
+                handleFiles(this.files, 975, 548, 'text_image_form_{{ loop.index }}', 'rectangle');#}
 
                 {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
                 $("#{{ multimedia.file.vars.id }}").jfilestyle({
                     buttonText: "<span class='icon icon-subir'></span>"
                 });#}
-            } );
+           {# } );
         </script>
-        {% endfor %}
-
-        <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
-        {% for summary in form.summaries %}
-            {{ form_label(summary, "Sumario "~loop.index) }}
-            {{ form_errors(summary) }}
-            {{ form_widget(summary, { 'attr': { 'class': 'texto' } }) }}
-        {% endfor %}
-
-        <legend class="titulo tam24 cuerpo rojo-500">Vídeo</legend>
-        {% for multimedia in videos %}
-        {{ form_label(multimedia.htmlCode, "Código del reproductor de vídeo") }}
-        {{ form_errors(multimedia.htmlCode) }}
-        {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
-        {% endfor %}
-
-        <legend class="titulo tam24 cuerpo rojo-500">Audio</legend>
-        {% for multimedia in audios %}
-        {{ form_label(multimedia.htmlCode, "Código del reproductor de audio") }}
-        {{ form_errors(multimedia.htmlCode) }}
-        {{ form_widget(multimedia.htmlCode, { 'attr': { 'rows': '2' } }) }}
-        {% endfor %}
+        {% endfor %}#}
     </span>
     <span class="col-3 pad">
+        <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
+        {% for summary in form.summaries %}
+        {{ form_label(summary, "Sumario "~loop.index) }}
+        {{ form_errors(summary) }}
+        {{ form_widget(summary, { 'attr': { 'class': 'texto' } }) }}
+        {% endfor %}
+
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
         {{ form_label(form.sectionId, "Sección") }}
         {{ form_errors(form.sectionId) }}
