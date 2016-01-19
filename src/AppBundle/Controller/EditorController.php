@@ -108,8 +108,10 @@ class EditorController extends Controller
 
         if ($id == "new") {
             $editorialContent = new $editorialContentClass();
+            $editorialContent->setAuthorId($this->getUser()->getId());
         } else {
             $editorialContent = $editorialContentManager->getById($id);
+            $editorialContent->setAuthorId($editorialContent->getAuthors()[0]);
             $formType->setAssignedCategories($contentsCategoriesManager->getCategoryIds($editorialContent->getId()));
             $formType->setAssignedTags($contentsTagsManager->getTagIds($editorialContent->getId()));
         }
@@ -386,7 +388,7 @@ class EditorController extends Controller
 
     private function setEditorialContentAuthors($object)
     {
-        $object->addAuthor($this->getUser()->getId());
+        $object->setAuthors(array($object->getAuthorId()));
 
         return $object;
     }
