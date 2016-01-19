@@ -351,7 +351,7 @@ class EditorController extends Controller
         }
 
         foreach ($object->getSummaries() as $summary) {
-            if ($summary == null || strlen($summary) == 0) {
+            if ($summary == null) {
                 $object->removeSummary($summary);
             }
         }

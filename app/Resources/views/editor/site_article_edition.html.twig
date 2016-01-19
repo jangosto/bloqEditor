@@ -1,6 +1,7 @@
 {% extends "editor/layout.html.twig" %}
 
 {% import "BloqMultimediaBundle::macros/multimedia_form.html.twig" as multimediaForm %}
+{% import "BloqEditorBundle::macros/component_form.html.twig" as componentForm %}
 
 {% block bodyId %}articulos{% endblock %}
 
@@ -36,16 +37,53 @@
         {{ form_label(form.text, "Texto del Artículo") }}
         {{ form_widget(form.text, { 'attr': { 'class': 'tinymce', 'rows': '30' } }) }}
         {{ tinymce_init() }}
+
+        <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
+        <ul class="summaries" data-prototype="{{ include('BloqEditorBundle:prototypes:summary_form_prototype.html.twig', { 'form': form.summaries.vars.prototype })|e }}">
+        {% for summary in form.summaries %}
+            <li id="summary_element_{{ summary.vars.name }}" data-index="{{ summary.vars.name }}">{{ componentForm.existingSummaryForm(summary) }}</li>
+        {% endfor %}
+        </ul>
+
+        <script>
+            var $summariesCollectionHolder;
+
+            var $addSummaryButton = $('<button class="add_summary boton negro">Añadir Sumario</button>');
+            var $newSummaryLi = $('<li></li>').append($addSummaryButton);
+
+            jQuery(document).ready(function() {
+                // Get the ul that holds the collection of tags
+                $summariesCollectionHolder = $('ul.summaries');
+
+                $summariesCollectionHolder.find('li').each(function() {
+                    addElementFormDeleteLink($(this));
+                });
+
+                // add the "add a tag" anchor and li to the tags ul
+                $summariesCollectionHolder.append($newSummaryLi);
+
+                // count the current form inputs we have (e.g. 2), use that as the new
+                // index when inserting a new item (e.g. 2)
+                $summariesCollectionHolder.data('index', $summariesCollectionHolder.find(':input').length);
+
+                $addSummaryButton.on('click', function(e) {
+                    // prevent the link from creating a "#" on the URL
+                    e.preventDefault();
+
+                    // add a new tag form (see next code block)
+                    addElementForm($summariesCollectionHolder, $newSummaryLi);
+                });
+            });
+        </script>
     </span>
     <span class="col-3 pad">
         <script>
             var emptyImageInput = '{% spaceless %}{{ multimediaForm.imageInputPrototype() }}{% endspaceless %}';
             var emptyVideoAudioForm = '{% spaceless %}{{ multimediaForm.videoAudioForm(form.multimedias.vars.prototype) }}{% endspaceless %}';
-            {#var imageForm = '{{ multimediaForm.imageForm(form.multimedias.vars.prototype, true) }}';#}
         </script>
         <ul class="multimedias" data-prototype="{{ include('BloqMultimediaBundle:prototypes:multimedia_form_prototype.html.twig', { 'form': form.multimedias.vars.prototype, 'type': 'image' })|e }}">
         {% for multimedia in form.multimedias %}
-            <li id="multimedia_element_{{ multimedia.vars.name }}" data-index="{{ multimedia.vars.name }}">{{ multimediaForm.existingMultimediaForm(multimedia) }}</li>
+            <li id="element_{{ multimedia.vars.name }}" data-index="{{ multimedia.vars.name }}">{{ multimediaForm.existingMultimediaForm(multimedia) }}</li>
         {% endfor %}
         </ul>
 
@@ -75,11 +113,6 @@
                 containerId = jQuery(this).closest('li').attr('id');
                 handleFiles(this.files, 975, 548, containerId, 'rectangle');
                 handleFiles(this.files, 500, 500, containerId, 'square');
-
-                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
-                $("#{{ multimedia.file.vars.id }}").jfilestyle({
-                    buttonText: "<span class='icon icon-subir'></span>"
-                });#}
             });
 
             function setPrimaryOptionEnabling()
@@ -128,7 +161,7 @@
         </script>
 
         <script>
-            var collectionHolder;
+            var $multimediasCollectionHolder;
 
             var $addMultimediaButton = $('<button class="add_multimedia boton negro">Añadir Multimedia</button>');
             var $newMultimediaLi = $('<li></li>').append($addMultimediaButton);
@@ -136,219 +169,34 @@
             jQuery(document).ready(function() {
                 setPrimaryOptionEnabling();
                 // Get the ul that holds the collection of tags
-                $collectionHolder = $('ul.multimedias');
+                $multimediasCollectionHolder = $('ul.multimedias');
 
-                $collectionHolder.find('li').each(function() {
-                    addMultimediaFormDeleteLink($(this));
+                $multimediasCollectionHolder.find('li').each(function() {
+                    addElementFormDeleteLink($(this));
                 });
 
                 // add the "add a tag" anchor and li to the tags ul
-                $collectionHolder.append($newMultimediaLi);
+                $multimediasCollectionHolder.append($newMultimediaLi);
 
                 // count the current form inputs we have (e.g. 2), use that as the new
                 // index when inserting a new item (e.g. 2)
-                $collectionHolder.data('index', $collectionHolder.find(':input').length);
+                $multimediasCollectionHolder.data('index', $multimediasCollectionHolder.find(':input').length);
 
                 $addMultimediaButton.on('click', function(e) {
                     // prevent the link from creating a "#" on the URL
                     e.preventDefault();
 
                     // add a new tag form (see next code block)
-                    addMultimediaForm($collectionHolder, $newMultimediaLi);
+                    var $newElementLi = addElementForm($multimediasCollectionHolder, $newMultimediaLi);
+                    $newElementLi.find("input[type='file']").jfilestyle({
+                        buttonText: "<span class='icon icon-subir'></span>"
+                    });
                     setPrimaryOptionEnabling();
                 });
             });
-
-            function addMultimediaForm($collectionHolder, $newMultimediaLi) {
-                // Get the data-prototype explained earlier
-                var prototype = $collectionHolder.data('prototype');
-
-                // get the new index
-                var index = $collectionHolder.data('index');
-
-                // Replace '__name__' in the prototype's HTML to
-                // instead be a number based on how many items we have
-                var newForm = prototype.replace(/__name__/g, index);
-
-                // increase the index with one for the next item
-                $collectionHolder.data('index', index + 1);
-
-                // Display the form in the page in an li, before the "Add a tag" link li
-                var $newFormLi = $('<li id="multimedia_element_'+index+'" data-index="'+index+'"></li>').append(newForm);
-                $newMultimediaLi.before($newFormLi);
-
-                addMultimediaFormDeleteLink($newFormLi);
-
-                $newFormLi.find("input[type='file']").jfilestyle({
-                    buttonText: "<span class='icon icon-subir'></span>"
-                });
-            }
-
-            function addMultimediaFormDeleteLink($MultimediaFormLi) {
-                var $removeFormA = $('<a style="float:left" class="boton cuadrado rojo remove-multimedia" href="#"><span class="icono icon icon-eliminar"></span></a>');
-                $MultimediaFormLi.prepend($removeFormA);
-
-                $removeFormA.on('click', function(e) {
-                    // prevent the link from creating a "#" on the URL
-                    e.preventDefault();
-
-                    // remove the li for the tag form
-                    $MultimediaFormLi.remove();
-            });
-}
         </script>
-
-        {# multimediaForm.imageControlScript(form.multimedias.vars.prototype, 'caja-imagen') #}
-
-
-
-
-{#
-        {% set primaryImages = [] %}
-        {% set textImages = [] %}
-        {% set videos = [] %}
-        {% set audios = [] %}
-        {% for multimediaObject in form.multimedias %}
-            {% if multimediaObject.vars.value.type == 'image' and multimediaObject.vars.value.position == 'primary' %}
-                {% set primaryImages = primaryImages|merge([multimediaObject]) %}
-            {% elseif multimediaObject.vars.value.type == 'image' %}
-                {% set textImages = textImages|merge([multimediaObject]) %}
-            {% elseif multimediaObject.vars.value.type == 'video' %}
-                {% set videos = videos|merge([multimediaObject]) %}
-            {% elseif multimediaObject.vars.value.type == 'audio' %}
-                {% set audios = audios|merge([multimediaObject]) %}
-            {% endif %}
-        {% endfor %}
-
-        <legend class="titulo tam24 cuerpo rojo-500">Imagen principal</legend>
-        {% for multimedia in primaryImages %}
-        {% set formHtml =
-            form_label(multimedia.file, "O sube una imagen")
-            ~ form_errors(multimedia.file)
-            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
-        %}
-        {% set imageHtml = '<label>Imagen Principal</label>
-        <span class="caja-imagen">
-            <span class="tarjeta imagen">
-                <img alt="" src="' ~ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path ~ '">
-                <span class="botones der">
-                    <a class="boton cuadrado blanco descartar" id="remove_primary_image_' ~ loop.index ~ '" href="#">
-                        <span class="icono icon icon-eliminar"></span>
-                    </a>
-                </span>
-            </span>'
-            ~ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) ~
-        '</span>' %} 
-        <div id="primary_image_form_{{ loop.index }}">
-            <div id="primary_image_form_{{ loop.index }}_input">
-            {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
-                {{ imageHtml | raw }}
-            {% else %}
-                {{ formHtml|raw }}
-            {% endif %}
-            {{ form_label(multimedia.title, "Título") }}
-            {{ form_errors(multimedia.title) }}
-            {{ form_widget(multimedia.title, { 'attr': { 'class': 'texto' } }) }}
-            {{ form_label(multimedia.description, "Descripción") }}
-            {{ form_errors(multimedia.description) }}
-            {{ form_widget(multimedia.description, { 'attr': { 'rows': '3' } }) }}
-            {{ form_label(multimedia.author, "Autor") }}
-            {{ form_errors(multimedia.author) }}
-            {{ form_widget(multimedia.author, { 'attr': { 'class': 'texto' } }) }}
-            </div>
-            {{ form_widget(multimedia.rectangle, { 'attr':{ 'class': 'rectangle', 'hidden': 'true' } }) }}
-            {{ form_widget(multimedia.square, { 'attr':{ 'class': 'square', 'hidden': 'true' } }) }}
-        </div>
-        <script>
-            jQuery("#remove_primary_image_{{ loop.index }}").click(function(){
-                if (window.confirm("¿Seguro que desea borrar la imagen?")) {
-                    jQuery("#primary_image_form_{{ loop.index }}_input").html('{{ formHtml|raw }}');
-                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
-                        buttonText: "<span class='icon icon-subir'></span>"
-                    });
-                }
-            });
-
-            $('#primary_image_form_{{ loop.index }}').on('change', 'input[type=file]', function(e) {
-                handleFiles(this.files, 975, 548, 'primary_image_form_{{ loop.index }}', 'rectangle');
-                handleFiles(this.files, 500, 500, 'primary_image_form_{{ loop.index }}', 'square');#}
-               
-                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
-                $("#{{ multimedia.file.vars.id }}").jfilestyle({
-                    buttonText: "<span class='icon icon-subir'></span>"
-                });#}
-{#            });
-        </script>
-        {% endfor %}
-
-        <legend class="titulo tam24 cuerpo rojo-500">Imágenes en texto</legend>
-        {% for multimedia in textImages %}
-        {% set formHtml = 
-            form_label(multimedia.file, "Subir la imagen en texto "~loop.index)
-            ~ form_errors(multimedia.file)
-            ~ form_widget(multimedia.file, { 'attr':{ 'tabindex': '-1' } })
-        %}
-        {% set imageHtml = '<label>Imagen en Texto ' ~ loop.index ~ '</label>
-            <span class="caja-imagen">
-                <span class="tarjeta imagen">
-                    <img alt="" src="' ~ multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path ~ '">
-                    <span class="botones der">
-                        <a class="boton cuadrado blanco descartar" id="remove_text_image_' ~ loop.index ~ '" href="#">
-                            <span class="icono icon icon-eliminar"></span>
-                       </a>
-                    </span>
-                </span>'
-                ~ form_widget(multimedia.path, { 'attr':{ 'hidden': 'true' } }) ~
-            '</span>'
-        %}
-        <div id="text_image_form_{{ loop.index }}">
-            <div id="text_image_form_{{ loop.index }}_input">
-            {% if multimedia.vars.data.path is defined and multimedia.vars.data.path|length > 0 %}
-                {{ imageHtml|raw }}
-            {% else %}
-                {{ formHtml|raw }}
-            {% endif %}
-            {{ form_label(multimedia.title, "Título") }}
-            {{ form_errors(multimedia.title) }}
-            {{ form_widget(multimedia.title, { 'attr': { 'class': 'texto' } }) }}
-            {{ form_label(multimedia.description, "Descripción") }}
-            {{ form_errors(multimedia.description) }}
-            {{ form_widget(multimedia.description, { 'attr': { 'rows': '3' } }) }}
-            {{ form_label(multimedia.author, "Autor") }}
-            {{ form_errors(multimedia.author) }}
-            {{ form_widget(multimedia.author, { 'attr': { 'class': 'texto' } }) }}
-            </div>
-            {{ form_widget(multimedia.rectangle, { 'attr':{ 'class': 'rectangle', 'hidden': 'true' } }) }}
-        </div>
-        <script>
-            jQuery("#remove_text_image_{{ loop.index }}").click(function(){
-                if (window.confirm("¿Seguro que desea borrar la imagen?")) {
-                    jQuery("#text_image_form_{{ loop.index }}_input").html('{{ formHtml|raw }}');
-                    $("#{{ multimedia.file.vars.id }}").jfilestyle({
-                        buttonText: "<span class='icon icon-subir'></span>"
-                    });
-                }
-            });
-
-            $('#text_image_form_{{ loop.index }}').on('change', 'input[type=file]', function(e) {
-                handleFiles(this.files, 975, 548, 'text_image_form_{{ loop.index }}', 'rectangle');#}
-
-                {#jQuery("#primary_image_form_{{ loop.index }}").html('{{ imageHtml|raw|replace({multimedia.vars.data.getOriginalImagesUploadDir() ~ multimedia.vars.data.path:}) }}');
-                $("#{{ multimedia.file.vars.id }}").jfilestyle({
-                    buttonText: "<span class='icon icon-subir'></span>"
-                });#}
-           {# } );
-        </script>
-        {% endfor %}#}
     </span>
     <span class="col-3 pad">
-        <legend class="titulo tam24 cuerpo rojo-500">Sumarios</legend>
-        {% for summary in form.summaries %}
-        {{ form_label(summary, "Sumario "~loop.index) }}
-        {{ form_errors(summary) }}
-        {{ form_widget(summary, { 'attr': { 'class': 'texto' } }) }}
-        {% endfor %}
-
         <legend class="titulo tam24 cuerpo rojo-500">Etiquetado</legend>
         {{ form_label(form.sectionId, "Sección") }}
         {{ form_errors(form.sectionId) }}
@@ -447,5 +295,41 @@
             ctx.lineWidth = 4;
             ctx.strokeRect(crop.x, crop.y, crop.width, crop.height);
         }#}
+
+        function addElementForm($collectionHolder, $newElementLi) {
+            // Get the data-prototype explained earlier
+            var prototype = $collectionHolder.data('prototype');
+
+            // get the new index
+            var index = $collectionHolder.data('index');
+
+            // Replace '__name__' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            var newForm = prototype.replace(/__name__/g, index);
+
+            // increase the index with one for the next item
+            $collectionHolder.data('index', index + 1);
+
+            // Display the form in the page in an li, before the "Add a tag" link li
+            var $newFormLi = $('<li id="element_'+index+'" data-index="'+index+'"></li>').append(newForm);
+            $newElementLi.before($newFormLi);
+
+            addElementFormDeleteLink($newFormLi);
+
+            return $newFormLi;
+        }
+
+        function addElementFormDeleteLink($elementFormLi) {
+            var $removeFormA = $('<a style="float:left" class="boton cuadrado rojo remove-element" href="#"><span class="icono icon icon-eliminar"></span></a>');
+            $elementFormLi.prepend($removeFormA);
+
+            $removeFormA.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // remove the li for the tag form
+                $elementFormLi.remove();
+            });
+        }
     </script>
 {% endblock %}
