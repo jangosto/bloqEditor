@@ -216,6 +216,13 @@
             </span>
         </span>
 
+        <legend class="titulo tam24 cuerpo rojo-500">Autor</legend>
+        {{ form_label(form.authorId, "Seleccione un autor") }}
+        {{ form_errors(form.authorId) }}
+        <span class="autor">
+            {{ form_widget(form.authorId) }}
+        </span>
+
         <span class="botones">
             {{ form_widget(form.publish, { 'label': "Publicar", 'attr': { 'type': 'submit', class: 'boton azul' } }) }}
             {{ form_widget(form.save, { 'label': "Guardar Borrador", 'attr': { 'type': 'submit', class: 'boton negro' } }) }}
