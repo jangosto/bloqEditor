@@ -52,6 +52,13 @@ twig:
         statics_domain: %statics.server.domain%
         editorial_contents: *editorial_contents_config
         relative_images_path: %bloq_multimedia.images.root_dir_rel_path%
+        #Front variables
+        #relative_images_url: %multimedia.images.dir.rel_url%
+        #multimedia_domain: %multimedia.domain%
+        #multimedia_domain_path: %multimedia.domain.path%
+        #twitter_account_name: %social.twitter.account.name%
+        #disqus_src_domain_prefix: %comments.disqus.src_domain_prefix%
+        #disqus_editorial_content_id_prefix: %comments.disqus.editorial_content.id_prefix%
 
 # Assetic Configuration
 assetic:
