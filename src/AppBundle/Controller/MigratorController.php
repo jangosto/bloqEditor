@@ -129,7 +129,7 @@ class MigratorController extends Controller
     {
         $title = $content->getTitle();
 
-        $excludedWords = array("-que-","-a-","-de-","-del-","-en-","-lo-","-la-","-el-","-los-","-las-","-ellos-","-ellas-");
+        $excludedWords = array("-que-","-a-","-de-","-del-","-en-","-lo-","-la-","-el-","-los-","-las-","-ellos-","-ellas-","-un-","-en-");
 
         $title = $this->normalizeString($title);
         $title = str_replace($excludedWords, "-", "-".$title);
@@ -154,7 +154,7 @@ class MigratorController extends Controller
 
         $result = str_replace(array("  ","   ","    ","     ")," ",$result);
         $result = trim ($result);
-        $result = str_replace(array("/","'",'"',"´",":","."," ",",",";"),array("-","-","","-","","","-","",""),$result);
+        $result = str_replace(array("/","'",'"',"´",":","."," ",",",";","¿","?","¡","!"),array("-","-","","-","","","-","","","","","",""),$result);
         $result = str_replace($a,$b,$result);
         $result = str_replace(array("--","---","----","-----"),"-",$result);
         $result = strtolower($result);
