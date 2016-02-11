@@ -1,0 +1,46 @@
+ANTETÍTULO: {{ content.pretitle }}
+
+TÍTULO: {{ content.title }}
+
+SUBTÍTULOS:
+{% for subtitle in content.subtitles %}
+    - {{ subtitle }}
+{% endfor %}
+
+ENTRADILLA: {{ content.intro }}
+
+TEXTO:
+{{ content.text }}
+
+SUMARIOS:
+{% for summary in content.summaries %}
+    - {{ summary.text }}
+{% endfor %}
+
+MULTIMEDIAS:
+{% for multimedia in content.multimedias %}
+{% if multimedia.type == "image" %}
+    TIPO: IMÁGEN
+        - PATH: {{ multimedia.path }}
+        - TÍTULO: {{ multimedia.title }}
+        - DESCRIPCIÓN: {{ multimedia.description }}
+        - AUTOR: {{ multimedia.author }}
+{% elseif multimedia.type == "video" or multimedia.type == "audio" %}
+    TIPO: VIDEO/AUDIO
+        - CÓDIGO: {{ multimedia.htmlCode }}
+{% endif %}
+{% endfor %}
+
+SECCIÓN: {{ content.section.name }}
+
+CATEGORIAS:
+{% for category in content.categories %}
+    - {{ category.name }}
+{% endfor %}
+
+ETIQUETAS:
+{% for tag in content.tags %}
+    - {{ tag.name }}
+{% endfor %}
+
+AUTOR: {{ users[content.authors.0].firstName }} {{ users[content.authors.0].lastName }}

@@ -22,9 +22,25 @@ fos_user_change_password:
 #    defaults:  { _controller: FOSUserBundle:Registration:register }
 
 _liip_imagine:
-        resource: "@LiipImagineBundle/Resources/config/routing.xml"
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"
 
-app:
-    resource: "@AppBundle/Controller/"
+Migration:
+    resource: "@AppBundle/Controller/MigratorController.php"
     type:     annotation
+
+Preview:
+    resource: "@AppBundle/Controller/PreviewController.php"
+    type:     annotation
+
+Admin:
+    resource: "@AppBundle/Controller/AdminController.php"
+    type:     annotation
+
+Editor:
+    resource: "@AppBundle/Controller/EditorController.php"
+    type:     annotation
+
+#app:
+#    resource: "@AppBundle/Controller/"
+#    type:     annotation
 
