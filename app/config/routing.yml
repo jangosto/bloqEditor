@@ -40,6 +40,10 @@ Editor:
     resource: "@AppBundle/Controller/EditorController.php"
     type:     annotation
 
+Default:
+    resource: "@AppBundle/Controller/DefaultController.php"
+    type: annotation
+
 #app:
 #    resource: "@AppBundle/Controller/"
 #    type:     annotation

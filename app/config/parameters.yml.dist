@@ -1,19 +1,44 @@
-# This file is a "template" of what your parameters.yml file should look like
-# Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
-# http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+# This file is auto-generated during the composer install
 parameters:
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
+    mailer_transport: null
+    mailer_host: null
+    mailer_user: null
+    mailer_password: null
+    secret: be7ffe89fb3e4ef3963c4022a73227eb495757a9
 
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
+    database_host: 127.0.0.1
+    database_port: null
 
-    # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    creator.database_name:     null
+    creator.database_user:     null
+    creator.database_password: null
+
+#Users Database config
+    users.database_name: null
+    users.database_user: null
+    users.database_password: null
+
+#Content Database config (three lines for each site)
+    #Site 1
+    #<site slug>.content.database_name: null
+    #<site slug>.content.database_user: null
+    #<site slug>.content.database_password: null
+    #Site 2
+    #...
+
+#EditorDomain
+    editor.domain.path: '' #Path to editor domain root dir
+
+#Statics Server
+    statics.server.domain: '' #Static server domain
+
+#Multimedia
+    multimedia.domain.path: '' #Path to multimedia domain root dir
+
+    multimedia.upload.dir.rel.path: '' #Relative path to upload dir (there have to be special string "{site_domain}" to create a directory for each site) (for example "/uploads/{site_domain}")
+    multimedia.cache_dir.prefix: '' #Relative path prefix for temp upload files which will be continued by uploads files dirs structure (for example 'uploads/cache')
+
+    multimedia.images.dir.rel_url: '' #Relative path from domain root dir to images dir
+
+#Migrator
+    migrator.destination.txt.dir.path: '' #Migration files destination absolute path
